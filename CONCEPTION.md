@@ -60,7 +60,7 @@ https://exemple.tld/sous-dossier/index.php?api/mcp/<clé>
 
 * La clé se crée dans **l'admin**, dans les préférences utilisateur. L'utilisateur y est authentifié par Dotclear
   (mot de passe, OTP, clé de sécurité) : l'assistant ne voit jamais d'identifiants.
-* Une clé est liée à **un utilisateur** et à **un blog**. Sur un multiblog, tout se gère depuis la même admin.
+* Une clé est liée à **un utilisateur** et à **un seul blog** (décision arrêtée : pas de clé multi-blogs). Sur un multiblog, tout se gère depuis la même admin, avec une clé et un connecteur par blog.
 * Clé longue et aléatoire, **affichée une seule fois**, stockée **hachée**, avec un libellé et une date de création.
 * **Révocable** d'un clic. Durée de vie optionnelle.
 * L'utilisateur doit avoir la permission du plugin sur le blog (comme pour ApiServer).
@@ -175,7 +175,6 @@ Le média à la une n'est ni dans le cœur ni dans un plugin officiel : il est h
 
 * Qu'un client accepte une adresse de connecteur avec chaîne de requête (`index.php?api/mcp/<clé>`).
 * Le comportement exact d'un client face à un serveur sans OAuth (pas de 401 pendant la découverte).
-* Une clé par blog, ou une clé valable sur plusieurs blogs avec un paramètre `blog` dans les outils.
 
 ## Références
 

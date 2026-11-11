@@ -16,6 +16,7 @@ d'outils typés, que l'assistant appelle directement.
 * **Simple à installer** : un plugin Dotclear comme un autre, sans toucher à la configuration du serveur web (Apache, nginx).
 * **Fonctionne partout** : blog à la racine, en sous-dossier, en sous-domaine, avec ou sans réécriture d'URL, en multiblog.
 * **Jamais de mot de passe confié à l'assistant.**
+* **Cœur et plugins officiels uniquement** : les outils ne s'appuient que sur le cœur de Dotclear et les plugins livrés avec (tags, pages, attachments, …).
 * **Les permissions Dotclear font foi** : l'assistant ne peut rien faire de plus que l'utilisateur qui l'a autorisé.
 * Le blog doit être joignable publiquement en HTTPS : les appels partent des serveurs de l'éditeur de l'assistant, pas du poste de l'utilisateur.
 
@@ -60,8 +61,7 @@ https://exemple.tld/sous-dossier/index.php?api/mcp/<clé>
 * La clé se crée dans **l'admin**, dans les préférences utilisateur. L'utilisateur y est authentifié par Dotclear
   (mot de passe, OTP, clé de sécurité) : l'assistant ne voit jamais d'identifiants.
 * Une clé est liée à **un utilisateur** et à **un blog**. Sur un multiblog, tout se gère depuis la même admin.
-* Clé longue et aléatoire, **affichée une seule fois**, stockée **hachée**, avec un libellé, une date de création
-  et une date de dernière utilisation.
+* Clé longue et aléatoire, **affichée une seule fois**, stockée **hachée**, avec un libellé et une date de création.
 * **Révocable** d'un clic. Durée de vie optionnelle.
 * L'utilisateur doit avoir la permission du plugin sur le blog (comme pour ApiServer).
 
@@ -70,11 +70,51 @@ https://exemple.tld/sous-dossier/index.php?api/mcp/<clé>
 Une clé dans une URL est moins sûre qu'OAuth : elle peut se retrouver dans les journaux du serveur web
 et il n'y a pas d'écran de consentement. Ce qui limite les dégâts :
 
-* révocation immédiate et date de dernière utilisation visible ;
+* révocation immédiate ;
 * limite d'appels et logs d'ApiServer ;
 * pas d'outil de suppression ;
 * option par clé « lecture seule » ;
 * HTTPS obligatoire.
+
+### Stockage des clés : table `credential` du cœur
+
+Les clés sont stockées dans la table `credential` (Dotclear 2.36+), via `App::credential()`, sans modifier sa structure.
+
+| Champ | Usage par ClaudetteMcp |
+|---|---|
+| `credential_type` (varchar 32) | `claudettemcp` |
+| `user_id` | l'utilisateur propriétaire de la clé |
+| `blog_id` | le blog auquel la clé donne accès |
+| `credential_value` (varchar 255) | l'empreinte SHA-256 de la clé (64 caractères), jamais la clé elle-même |
+| `credential_dt` | la date de création |
+| `credential_data` (chiffré par le cœur) | libellé, lecture seule, date d'expiration |
+
+La structure convient :
+
+* la contrainte d'unicité porte sur (type, utilisateur, blog, valeur) : plusieurs clés par utilisateur et par blog sont possibles ;
+* retrouver l'utilisateur d'une clé se fait avec `getCredentials()` sur le type, le blog et l'empreinte ;
+* les clés étrangères en cascade suppriment les clés quand l'utilisateur ou le blog est supprimé ;
+* modifier le libellé ou une option d'une clé se fait par suppression puis réinsertion avec la même empreinte.
+
+Limites :
+
+* pas de date de dernière utilisation : l'API n'a pas de mise à jour, et écrire dans la table à chaque appel n'est pas souhaitable.
+  Les logs d'ApiServer jouent ce rôle ;
+* `delCredentials()` ne supprime que pour le blog courant ou en global : suffisant depuis l'admin du blog concerné.
+
+Pas d'interférence avec les usages existants (vérifié sur le code de la 2.40) :
+
+* le cœur utilise les types `webauthn`, celui de l'OTP et `oauth2_<fournisseur>`, et filtre toujours sur le type :
+  aucune requête ne parcourt la table tous types confondus ;
+* le cœur n'enregistre que des lignes globales (`blog_id` nul), ClaudetteMcp que des lignes liées à un blog ;
+* les listes de l'admin (clés de sécurité, applications tierces) ne montrent donc pas les clés de ClaudetteMcp.
+
+Précautions dans le code du plugin :
+
+* toujours passer `credential_type` à `getCredentials()`, qui vaut `webauthn` par défaut ;
+* toujours passer `blog_id`, sans quoi seules les lignes globales sont lues ;
+* supprimer ses lignes à la désinstallation du plugin ;
+* l'export complet du plugin importExport n'inclut pas la table `credential` : après une migration, les clés sont à recréer.
 
 ## Évolutions d'ApiServer
 
@@ -109,7 +149,6 @@ Les détails (noms exacts, en-têtes, version du protocole) sont à vérifier da
 | `list_media` | lecture | media |
 | `create_post` | écriture | usage |
 | `update_post` | écriture | usage (ses billets) ou contentadmin |
-| `set_featured_media` | écriture | usage |
 | `set_post_status` (publier, programmer, mettre en attente) | écriture | publish |
 
 Règles :
@@ -120,15 +159,15 @@ Règles :
 * Réponses courtes : listes paginées, contenu complet d'un billet uniquement via `get_post`.
 * Les types d'entrées autres que `post` (pages, …) viendront plus tard.
 
-Le média à la une n'est pas dans le cœur de Dotclear : `set_featured_media` n'est proposé que si le plugin
-correspondant est actif.
+Le média à la une n'est ni dans le cœur ni dans un plugin officiel : il est hors périmètre.
+`list_tags` et les mots-clés des billets dépendent du plugin officiel tags, et ne sont proposés que s'il est actif.
 
 ## Étapes
 
 1. **ApiServer** : corps JSON, réponse libre, authentification déléguée.
 2. **ClaudetteMcp, lecture seule** : endpoint `mcp`, gestion des clés dans l'admin, outils de lecture.
    Test avec un client MCP de développement, puis comme connecteur dans Claude.
-3. **Écriture** : `create_post`, `update_post`, `set_featured_media`.
+3. **Écriture** : `create_post`, `update_post`.
 4. **Publication** : `set_post_status`.
 5. Plus tard : pages, commentaires, envoi de médias, OAuth optionnel.
 
@@ -136,7 +175,6 @@ correspondant est actif.
 
 * Qu'un client accepte une adresse de connecteur avec chaîne de requête (`index.php?api/mcp/<clé>`).
 * Le comportement exact d'un client face à un serveur sans OAuth (pas de 401 pendant la découverte).
-* Où stocker les clés : table dédiée, ou table `credential` du cœur (Dotclear 2.36+).
 * Une clé par blog, ou une clé valable sur plusieurs blogs avec un paramètre `blog` dans les outils.
 
 ## Références

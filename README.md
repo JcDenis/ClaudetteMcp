@@ -58,7 +58,7 @@ The assistant acts with the permissions of the user who created the key, never m
 | `set_post_status` | Publish, schedule, unpublish a post or a page (publish permission) |
 | `create_category` | Create a category (categories permission) |
 | `upload_media` | Add a file to the media library, never replacing one (media permission) |
-| `attach_media` | Link a media to an entry, as attachment or as featured media (plugin featuredMedia) |
+| `attach_media` | Link a media to an entry, as attachment (or as featured media with the plugin featuredMedia) |
 | `detach_media` | Remove the link between a media and an entry |
 | `set_comment_status` | Publish, unpublish or mark as junk a comment (publish permission) |
 
@@ -78,6 +78,15 @@ append to the given `ArrayObject` an instance of a class extending `Dotclear\Plu
 
 Tools run in frontend context, where Dotclear does not limit contents to user permissions:
 each tool must check permissions by itself.
+
+Other plugins can add a way to link a media to an entry with the behavior `ClaudetteMcpAddMediaLink`:
+append to the given `ArrayObject` an instance of `Dotclear\Plugin\ClaudetteMcp\McpMediaLink`
+(link type of the table `post_media`, description, and if an entry has only one media of this type).
+The tools `attach_media`, `detach_media` and `get_post` then know this link type.
+
+ClaudetteMcp tools only use Dotclear core and its distributed plugins. The directory `src/ThirdParty`
+holds the support of third party plugins, written with these behaviors only, as if these plugins provided it:
+currently the featured media of the plugin featuredMedia.
 
 ## LINKS
 

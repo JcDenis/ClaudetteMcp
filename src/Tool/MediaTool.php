@@ -82,8 +82,8 @@ abstract class MediaTool extends PostTool
     protected function link(array $args): string
     {
         $link = $this->str($args, 'link', 'attachment');
-        if (!in_array($link, $this->links(), true)) {
-            throw new McpToolException('Unknown link type, use one of: ' . implode(', ', $this->links()));
+        if (!isset($this->links()[$link])) {
+            throw new McpToolException('Unknown link type, use one of: ' . implode(', ', array_keys($this->links())));
         }
 
         return $link;
@@ -96,6 +96,11 @@ abstract class MediaTool extends PostTool
      */
     protected function linkProperties(): array
     {
+        $types = [];
+        foreach ($this->links() as $link) {
+            $types[] = '"' . $link->type . '" is ' . $link->description . ($link->single ? ' (an entry has only one)' : '');
+        }
+
         return [
             'post_id' => [
                 'type'        => 'integer',
@@ -107,9 +112,8 @@ abstract class MediaTool extends PostTool
             ],
             'link' => [
                 'type'        => 'string',
-                'enum'        => $this->links(),
-                'description' => 'The link type, default: attachment (a file to download listed with the entry).' .
-                    (in_array('featured', $this->links(), true) ? ' "featured" is the featured media of the entry, an entry has only one.' : ''),
+                'enum'        => array_keys($this->links()),
+                'description' => 'The link type, default: attachment. ' . implode(', ', $types) . '.',
             ],
         ];
     }

@@ -72,8 +72,8 @@ class AttachMedia extends MediaTool
             throw new McpToolException('Media not found, see list_media');
         }
 
-        // An entry has only one featured media
-        if ($link === 'featured') {
+        // An entry has only one media of this link type: replace it
+        if ($this->links()[$link]->single) {
             $old = App::postMedia()->getPostMedia(['post_id' => $post_id, 'link_type' => $link]);
             while ($old->fetch()) {
                 if ($old->intField('media_id') !== $media_id) {

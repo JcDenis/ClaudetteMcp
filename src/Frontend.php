@@ -35,6 +35,9 @@ class Frontend
             $endpoints->append(McpEndpoint::class);
         });
 
+        // Support of third party plugins, through ClaudetteMcp behaviors
+        ThirdParty\ThirdParty::register();
+
         return true;
     }
 }

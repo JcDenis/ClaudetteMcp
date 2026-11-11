@@ -207,8 +207,12 @@ Règles :
 * Les mots-clés sont écrits directement avec `App::meta()`, le plugin tags ne les gérant que depuis le formulaire de l'admin.
 * Les dates sont dans le fuseau de l'utilisateur, comme dans l'admin.
 
-Le média à la une n'est ni dans le cœur ni dans un plugin officiel, mais il n'est qu'un type de lien (`featured`)
-de la table `post_media` du cœur : `attach_media` le propose seulement si le plugin featuredMedia est actif.
+Le média à la une n'est ni dans le cœur ni dans un plugin officiel : les outils n'en parlent pas.
+Ils ne connaissent que le type de lien `attachment` de la table `post_media` du cœur, et le behavior
+`ClaudetteMcpAddMediaLink` permet d'en déclarer d'autres. Le répertoire `src/ThirdParty` contient le support
+des plugins tiers, écrit uniquement avec les behaviors de ClaudetteMcp, comme si ces plugins le fournissaient
+eux-mêmes : aujourd'hui le lien `featured` du plugin featuredMedia, déclaré seulement si ce plugin est actif.
+Le jour où un plugin tiers fournit lui-même son support, il suffit de supprimer sa classe de ce répertoire.
 `list_tags` et les mots-clés des billets dépendent du plugin officiel tags, et ne sont proposés que s'il est actif.
 
 ## Étapes
@@ -246,7 +250,7 @@ Règles :
 
 * Lier un média demande que le billet soit modifiable par l'utilisateur. L'admin de Dotclear ne le vérifie pas,
   l'outil est donc plus strict que l'admin, jamais moins.
-* Un billet n'a qu'un média à la une : en lier un autre remplace le précédent.
+* Un type de lien peut être déclaré unique par billet (le média à la une) : en lier un autre remplace le précédent.
 * `upload_media` reçoit le fichier en base64, ne remplace jamais un fichier existant et laisse le cœur refuser
   les types interdits (`media_exclusion`). Pas d'envoi depuis une adresse web : le serveur irait chercher
   une adresse choisie par l'assistant, y compris sur le réseau interne.

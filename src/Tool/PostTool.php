@@ -10,6 +10,8 @@ use Dotclear\Database\Cursor;
 use Dotclear\Database\MetaRecord;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Html\WikiToHtml;
+use Dotclear\Plugin\ClaudetteMcp\McpMediaLink;
+use Dotclear\Plugin\ClaudetteMcp\McpMediaLinks;
 use Dotclear\Plugin\ClaudetteMcp\McpTool;
 use Dotclear\Plugin\ClaudetteMcp\McpToolException;
 
@@ -82,18 +84,11 @@ abstract class PostTool extends McpTool
     /**
      * Get media link types current blog can use.
      *
-     * "featured" is the link type of the plugin featuredMedia, a post has only one of them.
-     *
-     * @return  array<int, string>
+     * @return  array<string, McpMediaLink>
      */
     protected function links(): array
     {
-        $links = ['attachment'];
-        if (App::plugins()->moduleExists('featuredMedia')) {
-            $links[] = 'featured';
-        }
-
-        return $links;
+        return McpMediaLinks::all();
     }
 
     /**
@@ -381,7 +376,7 @@ abstract class PostTool extends McpTool
     {
         $rs = App::postMedia()->getPostMedia([
             'post_id'   => $id,
-            'link_type' => $this->links(),
+            'link_type' => array_keys($this->links()),
             'columns'   => ['PM.link_type'],
         ]);
 

@@ -56,6 +56,11 @@ class Manage
      */
     private static string $new_key = '';
 
+    /**
+     * The key created by this request is accepted only from the request header.
+     */
+    private static bool $new_key_header = true;
+
     public static function init(): bool
     {
         return self::status(My::checkContext(My::MANAGE));
@@ -84,8 +89,10 @@ class Manage
                 self::$new_key = McpKeys::create(
                     mb_substr($label, 0, 64),
                     isset($_POST['key_readonly']),
-                    $lifetime === 0 ? 0 : time() + $lifetime * 86400
+                    $lifetime === 0 ? 0 : time() + $lifetime * 86400,
+                    isset($_POST['key_header'])
                 );
+                self::$new_key_header = isset($_POST['key_header']);
             }
 
             // Revoke a key
@@ -138,28 +145,59 @@ class Manage
     }
 
     /**
-     * Get connector URL for a key.
+     * Get connector URL, with a key or not.
      */
-    private static function connectorUrl(string $key): string
+    private static function connectorUrl(string $key = ''): string
     {
-        return App::blog()->url() . App::url()->getURLFor(ApiServerMy::id(), McpEndpoint::ID . '/' . $key);
+        return App::blog()->url() . App::url()->getURLFor(ApiServerMy::id(), McpEndpoint::ID . ($key === '' ? '' : '/' . $key));
     }
 
     private static function newKey(): Div
     {
+        $items = [
+            (new Text('p', __('Key successfully created. Copy these values now and add them as a connector in your AI assistant, the key will not be shown again.'))),
+            (new Para())
+                ->items([
+                    (new Input('new_key_url'))
+                        ->class('maximal')
+                        ->readonly(true)
+                        ->value(Html::escapeHTML(self::connectorUrl()))
+                        ->label((new Label(__('Connector address:'), Label::OL_TF))),
+                ]),
+            (new Para())
+                ->items([
+                    (new Input('new_key_header'))
+                        ->class('maximal')
+                        ->readonly(true)
+                        ->value(McpEndpoint::HEADER)
+                        ->label((new Label(__('Request header name:'), Label::OL_TF))),
+                ]),
+            (new Para())
+                ->items([
+                    (new Input('new_key_value'))
+                        ->class('maximal')
+                        ->readonly(true)
+                        ->value(self::$new_key)
+                        ->label((new Label(__('Request header value (the key):'), Label::OL_TF))),
+                ]),
+        ];
+
+        if (!self::$new_key_header) {
+            $items[] = (new Para())
+                ->items([
+                    (new Input('new_key_full_url'))
+                        ->class('maximal')
+                        ->readonly(true)
+                        ->value(Html::escapeHTML(self::connectorUrl(self::$new_key)))
+                        ->label((new Label(__('Or, for an assistant which can not send request headers, this single address:'), Label::OL_TF))),
+                ]);
+        }
+
+        $items[] = (new Text('p', __('The key is a secret: anyone who knows it can act on this blog with your permissions.')));
+
         return (new Div())
             ->class('success')
-            ->items([
-                (new Text('p', __('Key successfully created. Copy this address now and add it as a connector in your AI assistant, it will not be shown again:'))),
-                (new Para())
-                    ->items([
-                        (new Input('new_key_url'))
-                            ->class('maximal')
-                            ->readonly(true)
-                            ->value(Html::escapeHTML(self::connectorUrl(self::$new_key))),
-                    ]),
-                (new Text('p', __('This address is a secret: anyone who knows it can act on this blog with your permissions.'))),
-            ]);
+            ->items($items);
     }
 
     private static function keysList(): Table|Note
@@ -192,6 +230,9 @@ class Manage
                         ->text($key->readonly ? __('Read only') : __('Read and write')),
                     (new Td())
                         ->class('nowrap')
+                        ->text($key->header ? __('Header only') : __('Header or address')),
+                    (new Td())
+                        ->class('nowrap')
                         ->text(Html::escapeHTML(Date::dt2str(__('%Y-%m-%d %H:%M'), $key->date, $user_tz))),
                     (new Td())
                         ->class('nowrap')
@@ -220,6 +261,7 @@ class Manage
                         ->cols([
                             (new Th())->text(__('Label'))->scope('col'),
                             (new Th())->text(__('Access'))->scope('col'),
+                            (new Th())->text(__('Key sent by'))->scope('col'),
                             (new Th())->text(__('Created'))->scope('col'),
                             (new Th())->text(__('Expires'))->scope('col'),
                             (new Th())->text(__('Action'))->scope('col'),
@@ -256,6 +298,15 @@ class Manage
                             ->value('1')
                             ->label((new Label(__('Read only'), Label::IL_FT))),
                     ]),
+                (new Para())
+                    ->items([
+                        (new Checkbox('key_header', true))
+                            ->value('1')
+                            ->label((new Label(__('Accept the key only from the request header'), Label::IL_FT))),
+                    ]),
+                (new Note())
+                    ->class('form-note')
+                    ->text(__('Recommended. If unchecked, the key is also accepted in the connector address, where it can end in the web server logs.')),
                 (new Para())
                     ->items([
                         (new Select('key_lifetime'))

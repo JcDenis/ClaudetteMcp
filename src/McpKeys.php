@@ -52,10 +52,11 @@ class McpKeys
      * @param   string  $label      The key label
      * @param   bool    $readonly   The key is limited to read only tools
      * @param   int     $expire     The expiration timestamp, 0 for never
+     * @param   bool    $header     The key is accepted only from the request header
      *
      * @return  string  The key, it can not be retrieved later
      */
-    public static function create(string $label, bool $readonly = true, int $expire = 0): string
+    public static function create(string $label, bool $readonly = true, int $expire = 0, bool $header = true): string
     {
         $key = bin2hex(random_bytes(32));
 
@@ -68,6 +69,7 @@ class McpKeys
             'label'    => $label,
             'readonly' => $readonly,
             'expire'   => $expire,
+            'header'   => $header,
         ]));
 
         App::credential()->setCredential(App::auth()->userID(), $cur);
@@ -140,6 +142,7 @@ class McpKeys
                 label:    isset($data['label'])    && is_string($data['label']) ? $data['label'] : '',
                 readonly: !isset($data['readonly']) || $data['readonly'] !== false,
                 expire:   isset($data['expire'])   && is_int($data['expire']) ? $data['expire'] : 0,
+                header:   isset($data['header'])   && $data['header'] === true,
                 date:     $rs->strField('credential_dt'),
             );
         }

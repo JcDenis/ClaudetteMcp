@@ -30,9 +30,12 @@ See [CONCEPTION.md](CONCEPTION.md) (in French) for the design and the roadmap.
 1. Install and enable the plugins _ApiServer_ and _ClaudetteMcp_.
 2. Activate the API in blog settings, and give the permission "API client" to the users allowed to use it.
 3. In the blog menu, open _Claudette MCP_ and create a key.
-4. Copy the given address and add it as a custom connector (remote MCP server, no authentication) in your AI assistant.
+4. Add a custom connector (remote MCP server, no authentication) in your AI assistant, with the given address
+   and the given request header `X-ClaudetteMcp-Key`, which contains the key.
 
-The address contains the key: it is shown once and must be kept secret.
+The key is shown once and must be kept secret.
+For an assistant which can not send request headers, a key can also be accepted in the connector address
+(uncheck "Accept the key only from the request header"), but it can then end in the web server logs.
 A key belongs to one user and one blog, it can be revoked at any time from the same page.
 The assistant acts with the permissions of the user who created the key, never more.
 

@@ -20,6 +20,15 @@ class McpEndpoint extends ApiServerEndpoint
     public const CACHE = false;
 
     /**
+     * The request header used to send the access key.
+     *
+     * A dedicated header is used as some web servers do not give Authorization header to PHP.
+     *
+     * @var     string  HEADER
+     */
+    public const HEADER = 'X-ClaudetteMcp-Key';
+
+    /**
      * The access key used for this call.
      */
     private McpKey $key;
@@ -37,13 +46,20 @@ class McpEndpoint extends ApiServerEndpoint
     }
 
     /**
-     * User is authenticated by the access key from URL.
+     * User is authenticated by the access key from request header, or from URL if the key allows it.
      */
     protected function checkUser(): void
     {
-        $key = McpKeys::find($this->api->getArg(0));
+        $name   = 'HTTP_' . strtoupper(str_replace('-', '_', self::HEADER));
+        $header = isset($_SERVER[$name]) && is_string($_SERVER[$name]) ? trim($_SERVER[$name]) : '';
 
-        // Do not say if key is wrong, expired or if user lost its permission
+        // Key from header first, a key from URL is then ignored
+        $key = McpKeys::find($header !== '' ? $header : $this->api->getArg(0));
+        if ($header === '' && $key instanceof McpKey && $key->header) {
+            $key = null;
+        }
+
+        // Do not say if key is wrong, expired, sent the wrong way or if user lost its permission
         if (!$key instanceof McpKey || !$this->setVerifiedUser($key->user)) {
             $this->sendRaw(McpServer::error(null, McpServer::INVALID_REQUEST, 'Not found'), 404);
         }

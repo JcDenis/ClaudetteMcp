@@ -45,7 +45,7 @@ Chaque outil doit donc vérifier lui-même les permissions. Règle retenue pour 
 les billets publiés sont visibles de tous ; les autres statuts et les billets protégés par mot de passe
 ne sont visibles que de leur auteur ou d'un administrateur de contenu.
 
-## Authentification : une clé dans l'adresse, pas d'OAuth
+## Authentification : une clé, pas d'OAuth
 
 ### Pourquoi pas OAuth en v1
 
@@ -64,12 +64,21 @@ d'un domaine avec réécriture d'URL.
 
 ### Le choix retenu
 
-Le client se connecte sans OAuth, à une adresse qui contient une clé secrète :
+Le client se connecte sans OAuth, avec une clé secrète envoyée dans un en-tête de requête :
 
 ```
-https://exemple.tld/api/mcp/<clé>
-https://exemple.tld/sous-dossier/index.php?api/mcp/<clé>
+https://exemple.tld/api/mcp
+https://exemple.tld/sous-dossier/index.php?api/mcp
+X-ClaudetteMcp-Key: <clé>
 ```
+
+L'en-tête est la voie recommandée (depuis la version 0.2) : la clé n'apparaît plus dans les journaux d'accès du serveur web.
+Un en-tête dédié est utilisé plutôt que `Authorization`, que certaines configurations (Apache avec PHP en CGI)
+ne transmettent pas à PHP sans réglage du serveur.
+
+Pour les clients qui ne savent pas envoyer d'en-tête, une clé peut aussi être acceptée dans l'adresse
+(`…/api/mcp/<clé>`), si l'option « en-tête uniquement » de la clé est décochée. Les clés créées en 0.1 restent
+acceptées des deux façons.
 
 * La clé se crée dans **l'admin**, sur une page du plugin (menu Blog). L'utilisateur y est authentifié par Dotclear
   (mot de passe, OTP, clé de sécurité) : l'assistant ne voit jamais d'identifiants.
@@ -82,8 +91,10 @@ https://exemple.tld/sous-dossier/index.php?api/mcp/<clé>
 
 ### Compromis assumé
 
-Une clé dans une URL est moins sûre qu'OAuth : elle peut se retrouver dans les journaux du serveur web
-et il n'y a pas d'écran de consentement. Ce qui limite les dégâts :
+Une clé fixe est moins sûre qu'OAuth : il n'y a pas d'écran de consentement ni de renouvellement automatique,
+et une clé placée dans l'adresse peut se retrouver dans les journaux du serveur web. Ce qui limite les dégâts :
+
+* clé dans un en-tête par défaut ;
 
 * révocation immédiate ;
 * limite d'appels et logs d'ApiServer ;

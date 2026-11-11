@@ -19,6 +19,7 @@ class McpKey
      * @param   string  $label      The key label
      * @param   bool    $readonly   The key is limited to read only tools
      * @param   int     $expire     The expiration timestamp, 0 for never
+     * @param   bool    $header     The key is accepted only from the request header
      * @param   string  $date       The creation date
      */
     public function __construct(
@@ -27,6 +28,7 @@ class McpKey
         public readonly string $label,
         public readonly bool $readonly,
         public readonly int $expire,
+        public readonly bool $header,
         public readonly string $date,
     ) {
     }

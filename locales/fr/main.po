@@ -24,11 +24,17 @@ msgstr "Un nom pour reconnaître cette clé, par exemple le nom de l'assistant q
 msgid "API server is not active on this blog: keys can not be used until it is activated in blog settings."
 msgstr "Le serveur d'API n'est pas actif sur ce blog : les clés ne peuvent pas être utilisées tant qu'il n'est pas activé dans les paramètres du blog."
 
+msgid "Accept the key only from the request header"
+msgstr "N'accepter la clé que dans l'en-tête de requête"
+
 msgid "Access"
 msgstr "Accès"
 
 msgid "Action"
 msgstr "Action"
+
+msgid "Connector address:"
+msgstr "Adresse du connecteur :"
 
 msgid "Create a key"
 msgstr "Créer une clé"
@@ -42,11 +48,20 @@ msgstr "Expire le"
 msgid "Expires:"
 msgstr "Expiration :"
 
+msgid "Header only"
+msgstr "En-tête uniquement"
+
+msgid "Header or address"
+msgstr "En-tête ou adresse"
+
 msgid "In %s days"
 msgstr "Dans %s jours"
 
-msgid "Key successfully created. Copy this address now and add it as a connector in your AI assistant, it will not be shown again:"
-msgstr "Clé créée avec succès. Copiez cette adresse maintenant et ajoutez-la comme connecteur dans votre assistant IA, elle ne sera plus affichée :"
+msgid "Key sent by"
+msgstr "Clé envoyée par"
+
+msgid "Key successfully created. Copy these values now and add them as a connector in your AI assistant, the key will not be shown again."
+msgstr "Clé créée avec succès. Copiez ces valeurs maintenant et ajoutez-les comme connecteur dans votre assistant IA, la clé ne sera plus affichée."
 
 msgid "Key successfully revoked."
 msgstr "Clé révoquée avec succès."
@@ -60,17 +75,29 @@ msgstr "Libellé :"
 msgid "Never"
 msgstr "Jamais"
 
+msgid "Or, for an assistant which can not send request headers, this single address:"
+msgstr "Ou, pour un assistant qui ne peut pas envoyer d'en-têtes de requête, cette seule adresse :"
+
 msgid "Read and write"
 msgstr "Lecture et écriture"
 
 msgid "Read only"
 msgstr "Lecture seule"
 
+msgid "Recommended. If unchecked, the key is also accepted in the connector address, where it can end in the web server logs."
+msgstr "Recommandé. Si décoché, la clé est aussi acceptée dans l'adresse du connecteur, où elle peut se retrouver dans les journaux du serveur web."
+
+msgid "Request header name:"
+msgstr "Nom de l'en-tête de requête :"
+
+msgid "Request header value (the key):"
+msgstr "Valeur de l'en-tête de requête (la clé) :"
+
 msgid "Revoke"
 msgstr "Révoquer"
 
-msgid "This address is a secret: anyone who knows it can act on this blog with your permissions."
-msgstr "Cette adresse est un secret : toute personne qui la connaît peut agir sur ce blog avec vos permissions."
+msgid "The key is a secret: anyone who knows it can act on this blog with your permissions."
+msgstr "La clé est un secret : toute personne qui la connaît peut agir sur ce blog avec vos permissions."
 
 msgid "You have no key for this blog."
 msgstr "Vous n'avez aucune clé pour ce blog."

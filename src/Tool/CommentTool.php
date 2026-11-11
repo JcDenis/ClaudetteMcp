@@ -116,7 +116,7 @@ abstract class CommentTool extends PostTool
             'id'          => $rs->intField('comment_id'),
             'date'        => $rs->strField('comment_dt'),
             'status'      => $status === false ? 'unknown' : $status,
-            'spam_filter' => $rs->strField('comment_spam_filter'),
+            'spam_filter' => $rs->strField('comment_spam_filter') === '0' ? '' : $rs->strField('comment_spam_filter'),
             'trackback'   => $rs->boolField('comment_trackback'),
             'author'      => $rs->strField('comment_author'),
             'site'        => $rs->strField('comment_site'),

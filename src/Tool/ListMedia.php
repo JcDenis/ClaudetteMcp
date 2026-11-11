@@ -30,7 +30,7 @@ class ListMedia extends McpTool
 
     public function description(): string
     {
-        return 'List sub-directories and files of a directory of the blog media library. ' .
+        return 'List sub-directories and files of a directory of the blog media library, files by page. ' .
             'Private files of other users are listed only if the user is a media administrator.';
     }
 
@@ -40,6 +40,14 @@ class ListMedia extends McpTool
             'dir' => [
                 'type'        => 'string',
                 'description' => 'Directory path relative to the media library root, default: the root.',
+            ],
+            'limit' => [
+                'type'        => 'integer',
+                'description' => 'Files per page, 1 to 100, default: 50.',
+            ],
+            'page' => [
+                'type'        => 'integer',
+                'description' => 'Page number, default: 1.',
             ],
         ];
     }
@@ -54,7 +62,9 @@ class ListMedia extends McpTool
 
     public function call(array $args): array
     {
-        $dir = $this->str($args, 'dir');
+        $dir   = $this->str($args, 'dir');
+        $limit = $this->int($args, 'limit', 50, 1, 100);
+        $page  = $this->int($args, 'page', 1, 1);
 
         try {
             App::media()->chdir($dir);
@@ -71,7 +81,8 @@ class ListMedia extends McpTool
         }
 
         $files = [];
-        foreach (App::media()->getFiles() as $item) {
+        $all = App::media()->getFiles();
+        foreach (array_slice($all, ($page - 1) * $limit, $limit) as $item) {
             $vars    = get_object_vars($item);
             $files[] = [
                 'id'    => isset($vars['media_id'])    && is_int($vars['media_id']) ? $vars['media_id'] : 0,
@@ -88,6 +99,9 @@ class ListMedia extends McpTool
         return [
             'dir'   => $dir,
             'dirs'  => $dirs,
+            'total' => count($all),
+            'page'  => $page,
+            'limit' => $limit,
             'files' => $files,
         ];
     }

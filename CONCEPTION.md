@@ -216,7 +216,28 @@ Le média à la une n'est ni dans le cœur ni dans un plugin officiel : il est h
    Test avec un client MCP de développement, puis comme connecteur dans Claude.
 3. **Écriture** : `create_post`, `update_post`.
 4. **Publication** : `set_post_status`.
-5. Plus tard : pages, commentaires, envoi de médias, OAuth optionnel.
+5. Plus tard : OAuth optionnel.
+
+## Feuille de route (après Dotclear 2.40)
+
+Règle : une clé ne donne jamais plus que les permissions Dotclear de son utilisateur, sans exception ni outil réservé.
+Elle peut seulement donner moins (lecture seule aujourd'hui, familles d'outils plus tard).
+
+La plupart des utilisateurs créeront la clé sur leur propre compte, souvent administrateur ou super administrateur,
+plutôt que sur un utilisateur dédié. La liste des outils est donc le vrai garde-fou : pas de suppression de billet,
+pas d'accès aux paramètres du blog, aux utilisateurs, aux permissions, aux plugins, aux thèmes ni aux clés.
+Le README doit continuer à conseiller un utilisateur dédié.
+
+Outils prévus, par ordre d'utilité :
+
+1. Média à la une et annexes d'un billet (lier et délier un média existant).
+2. Envoi d'un média.
+3. Pages (plugin officiel `pages`).
+4. Commentaires : lister, lire, changer le statut. Pas de réponse au nom de l'utilisateur.
+5. Création de catégorie.
+6. Notes personnelles du billet (`post_notes`), en lecture et en écriture.
+
+Ensuite : choix des familles d'outils (billets, pages, médias, commentaires) à la création de la clé.
 
 ## Points à vérifier
 

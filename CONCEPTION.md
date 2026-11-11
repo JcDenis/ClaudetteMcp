@@ -141,7 +141,10 @@ Précautions dans le code du plugin :
 
 * toujours passer `credential_type` à `getCredentials()`, qui vaut `webauthn` par défaut ;
 * toujours passer `blog_id`, sans quoi seules les lignes globales sont lues ;
-* supprimer ses lignes à la désinstallation du plugin (**reste à faire** : le plugin Uninstaller n'a pas de nettoyeur pour cette table) ;
+* supprimer ses lignes à la désinstallation du plugin : `src/Uninstall.php` le demande au nettoyeur `credentials`
+  du plugin Uninstaller. **Ce nettoyeur n'existe pas encore dans le cœur** : il est proposé sur la branche
+  `uninstaller-credentials` de `dotclear-private`, à soumettre après la sortie de Dotclear 2.40. Tant qu'il est absent,
+  Uninstaller ignore cette action sans erreur et les clés restent en base ;
 * l'export complet du plugin importExport n'inclut pas la table `credential` : après une migration, les clés sont à recréer.
 
 ## Évolutions d'ApiServer

@@ -72,7 +72,7 @@ class CreatePost extends PostTool
         $this->prepareFormat($format);
 
         $cur = App::blog()->openPostCursor();
-        $cur->setStrField('post_type', static::POST_TYPE);
+        $cur->setStrField('post_type', $this->postType());
         $cur->setStrField('user_id', App::auth()->userID());
         $cur->setStrField('post_title', $title);
         $cur->setStrField('post_content', $content);

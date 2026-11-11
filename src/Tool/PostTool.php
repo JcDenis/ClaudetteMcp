@@ -22,7 +22,13 @@ use Dotclear\Plugin\ClaudetteMcp\McpToolException;
  */
 abstract class PostTool extends McpTool
 {
-    protected const string POST_TYPE = 'post';
+    /**
+     * Get the entries type the tool works on.
+     */
+    protected function postType(): string
+    {
+        return 'post';
+    }
 
     /**
      * Get entries statuses the tools know.
@@ -64,7 +70,7 @@ abstract class PostTool extends McpTool
         // In frontend context, Dotclear adds published entries to the requested statuses: limit to them again
         $sql    = 'AND P.post_status IN (' . implode(',', $values) . ') ';
         $params = [
-            'post_type'   => static::POST_TYPE,
+            'post_type'   => $this->postType(),
             'post_status' => $values,
         ];
 

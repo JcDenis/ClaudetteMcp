@@ -22,7 +22,7 @@ $this->registerModule(
     'Claudette MCP',
     'Connect an AI assistant to your blog through MCP',
     'Jean-Christian Paul Denis and Contributors',
-    '0.2',
+    '0.3',
     [
         'requires' => [
             ['php', '8.3'],

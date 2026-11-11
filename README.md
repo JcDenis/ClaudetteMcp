@@ -33,6 +33,9 @@ See [CONCEPTION.md](CONCEPTION.md) (in French) for the design and the roadmap.
 4. Add a custom connector (remote MCP server, no authentication) in your AI assistant, with the given address
    and the given request header `X-Api-Key`, which contains the key.
 
+With Claude, the connector must be added through the manual configuration (authentication "No sign-in"),
+as the server can not be checked before the request header is given.
+
 The key is shown once and must be kept secret.
 For an assistant which can not send request headers, a key can also be accepted in the connector address
 (uncheck "Accept the key only from the request header"), but it can then end in the web server logs.

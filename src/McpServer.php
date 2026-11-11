@@ -47,11 +47,11 @@ class McpServer
     private string $content = '';
 
     /**
-     * @param   McpTools    $tools      The tools
-     * @param   bool        $readonly   Limit to read only tools
+     * @param   null|McpTools   $tools      The tools, null for an anonymous call (no valid access key)
+     * @param   bool            $readonly   Limit to read only tools
      */
     public function __construct(
-        private readonly McpTools $tools,
+        private readonly ?McpTools $tools,
         private readonly bool $readonly = true,
     ) {
     }
@@ -132,6 +132,13 @@ class McpServer
             return;
         }
 
+        // Anonymous call: handshake only
+        if (!$this->tools instanceof McpTools && !in_array($method, ['initialize', 'ping'], true)) {
+            $this->fail(401, $id, self::INVALID_REQUEST, sprintf('Missing or invalid access key, send it in the %s request header', McpEndpoint::HEADER));
+
+            return;
+        }
+
         switch ($method) {
             case 'initialize':
                 $this->succeed($id, $this->initialize($params));
@@ -151,7 +158,7 @@ class McpServer
             case 'tools/call':
                 $name = isset($params['name'])      && is_string($params['name']) ? $params['name'] : '';
                 $args = isset($params['arguments']) && is_array($params['arguments']) ? $params['arguments'] : [];
-                $tool = $this->tools->get($name);
+                $tool = $this->tools?->get($name);
 
                 if (!$tool instanceof McpTool || !$this->isAllowed($tool)) {
                     $this->fail(200, $id, self::INVALID_PARAMS, 'Unknown tool: ' . $name);
@@ -176,6 +183,21 @@ class McpServer
     private function initialize(array $params): array
     {
         $requested = isset($params['protocolVersion']) && is_string($params['protocolVersion']) ? $params['protocolVersion'] : '';
+
+        // Anonymous call: say nothing about the blog
+        if (!$this->tools instanceof McpTools) {
+            return [
+                'protocolVersion' => in_array($requested, self::VERSIONS, true) ? $requested : self::VERSIONS[0],
+                'capabilities'    => [
+                    'tools' => new stdClass(),
+                ],
+                'serverInfo' => [
+                    'name'    => My::id(),
+                    'version' => '',
+                ],
+                'instructions' => sprintf('An access key is required to use this server, send it in the %s request header.', McpEndpoint::HEADER),
+            ];
+        }
 
         return [
             'protocolVersion' => in_array($requested, self::VERSIONS, true) ? $requested : self::VERSIONS[0],
@@ -202,7 +224,7 @@ class McpServer
     private function listTools(): array
     {
         $list = [];
-        foreach ($this->tools->all() as $tool) {
+        foreach ($this->tools?->all() ?? [] as $tool) {
             if (!$this->isAllowed($tool)) {
                 continue;
             }

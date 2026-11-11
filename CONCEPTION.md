@@ -166,8 +166,11 @@ Les logs d'ApiServer n'enregistrent que le nom de l'endpoint : la clé n'y appar
   puisse demander confirmation avant d'écrire.
 
 Versions du protocole gérées : `2025-03-26`, `2025-06-18` et `2025-11-25`. Une version inconnue dans l'en-tête
-`MCP-Protocol-Version` reçoit un 400 avec la liste des versions gérées. Un GET reçoit un 405, une notification un 202,
-une clé inconnue, expirée ou sans permission un 404.
+`MCP-Protocol-Version` reçoit un 400 avec la liste des versions gérées. Un GET reçoit un 405, une notification un 202.
+
+Sans clé valide (absente, inconnue, expirée, envoyée par la mauvaise voie, ou utilisateur sans permission), l'appel est
+anonyme : le serveur ne répond qu'à la poignée de main (`initialize`, `ping`), sans rien dire du blog, et renvoie un 401
+pour tout le reste. C'est nécessaire parce que le client vérifie l'adresse du connecteur avant d'envoyer les en-têtes.
 
 **À suivre** : la révision `2026-07-28` du protocole supprime la poignée de main `initialize` et impose de nouveaux
 en-têtes (`Mcp-Method`, `Mcp-Name`). Le serveur est déjà sans état, mais cette révision n'est ni déclarée ni testée.

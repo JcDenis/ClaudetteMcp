@@ -29,9 +29,9 @@ class McpEndpoint extends ApiServerEndpoint
     public const HEADER = 'X-ClaudetteMcp-Key';
 
     /**
-     * The access key used for this call.
+     * The access key used for this call, null if there is no valid key.
      */
-    private McpKey $key;
+    private ?McpKey $key = null;
 
     /**
      * Only POST method is supported (no SSE stream).
@@ -59,19 +59,22 @@ class McpEndpoint extends ApiServerEndpoint
             $key = null;
         }
 
-        // Do not say if key is wrong, expired, sent the wrong way or if user lost its permission
-        if (!$key instanceof McpKey || !$this->setVerifiedUser($key->user)) {
-            $this->sendRaw(McpServer::error(null, McpServer::INVALID_REQUEST, 'Not found'), 404);
+        // Without a valid key (wrong, expired, sent the wrong way, user without permission) the call is anonymous:
+        // the server only answers to the handshake, which clients use to check the address before sending the key.
+        if ($key instanceof McpKey && $this->setVerifiedUser($key->user)) {
+            $this->key = $key;
+        } else {
+            $this->setVerifiedUser('');
         }
-
-        $this->key = $key;
     }
 
     protected function callEndpoint(): void
     {
         $version = isset($_SERVER['HTTP_MCP_PROTOCOL_VERSION']) && is_string($_SERVER['HTTP_MCP_PROTOCOL_VERSION']) ? $_SERVER['HTTP_MCP_PROTOCOL_VERSION'] : '';
 
-        $server = new McpServer(new McpTools(), $this->key->readonly);
+        $server = $this->key instanceof McpKey ?
+            new McpServer(new McpTools(), $this->key->readonly) :
+            new McpServer(null);
         $server->handle($this->api->getBody(), $version);
 
         $this->sendRaw($server->getContent(), $server->getStatus());

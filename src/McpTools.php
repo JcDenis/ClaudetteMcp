@@ -35,6 +35,7 @@ class McpTools
             new Tool\ListMedia(),
             new Tool\CreatePost(),
             new Tool\UpdatePost(),
+            new Tool\SetPostStatus(),
         ]);
 
         # --BEHAVIOR-- ClaudetteMcpAddTool -- ArrayObject

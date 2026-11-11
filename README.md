@@ -15,7 +15,7 @@ It adds a [Model Context Protocol](https://modelcontextprotocol.io) server to a 
 an AI assistant (Claude or any MCP client) can then use tools to work on the blog,
 without a browser and without knowing any password.
 
-**This is an early version: tools read the blog, create and update entries, but never publish nor delete anything.**
+**This is an early version: tools read the blog, create, update and publish entries, but never delete anything.**
 See [CONCEPTION.md](CONCEPTION.md) (in French) for the design and the roadmap.
 
 ## REQUIREMENTS
@@ -48,6 +48,7 @@ The assistant acts with the permissions of the user who created the key, never m
 | `list_media` | List a directory of the media library (media permission) |
 | `create_post` | Create an entry, never published (HTML or wiki) |
 | `update_post` | Update an entry, without changing its status |
+| `set_post_status` | Publish, schedule, unpublish an entry (publish permission) |
 
 Entries which are not published are readable only by their author or by a content administrator.
 Writing tools are not available with a read only key, and need the same permissions as in the blog administration.

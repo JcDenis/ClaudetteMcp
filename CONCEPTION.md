@@ -1,7 +1,7 @@
 # ClaudetteMcp — Conception
 
 Document de conception du plugin Dotclear **ClaudetteMcp**.
-État au 11 novembre 2026 : étapes 1 à 3 codées (branche `raw-endpoint` d'ApiServer ; lecture puis écriture dans ClaudetteMcp, branches `readonly` et `write`).
+État au 11 novembre 2026 : étapes 1 à 4 codées (branche `raw-endpoint` d'ApiServer ; branches `readonly`, `write` et `status` de ClaudetteMcp).
 
 ## Objectif
 
@@ -172,17 +172,14 @@ en-têtes (`Mcp-Method`, `Mcp-Name`). Le serveur est déjà sans état, mais cet
 
 | `create_post` | écriture | usage |
 | `update_post` | écriture | usage (ses billets) ou contentadmin |
-
-Les outils ci-dessus sont codés. Le suivant reste à faire.
-
-| Outil | Type | Permission Dotclear |
-|---|---|---|
 | `set_post_status` (publier, programmer, mettre en attente) | écriture | publish |
 
 Règles :
 
 * `create_post` crée toujours en **non publié**. Publier ou programmer passe par `set_post_status`.
 * **Pas de suppression** en v1.
+* `set_post_status` refuse de programmer un billet dont la date n'est pas dans le futur, et demande dans sa description
+  de n'être utilisé que sur demande explicite de l'utilisateur.
 * Les pings ne sont jamais envoyés.
 * Réponses courtes : listes paginées, contenu complet d'un billet uniquement via `get_post`.
 * Les types d'entrées autres que `post` (pages, …) viendront plus tard.

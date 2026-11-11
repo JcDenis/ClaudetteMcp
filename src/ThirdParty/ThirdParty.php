@@ -23,5 +23,6 @@ class ThirdParty
     public static function register(): void
     {
         FeaturedMedia::register();
+        Periodical::register();
     }
 }

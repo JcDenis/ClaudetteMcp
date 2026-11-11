@@ -85,8 +85,13 @@ append to the given `ArrayObject` an instance of `Dotclear\Plugin\ClaudetteMcp\M
 The tools `attach_media`, `detach_media` and `get_post` then know this link type.
 
 ClaudetteMcp tools only use Dotclear core and its distributed plugins. The directory `src/ThirdParty`
-holds the support of third party plugins, written with these behaviors only, as if these plugins provided it:
-currently the featured media of the plugin featuredMedia.
+holds the support of third party plugins, written with these behaviors only, as if these plugins provided it.
+Each one is available only if its plugin is enabled:
+
+| Plugin | Support |
+|---|---|
+| featuredMedia | Link type `featured` for `attach_media`, `detach_media` and `get_post` |
+| periodical | Tools `list_periods` and `set_post_period`, to link a post to a period of publication |
 
 ## LINKS
 

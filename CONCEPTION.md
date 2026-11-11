@@ -207,9 +207,11 @@ Le média à la une n'est ni dans le cœur ni dans un plugin officiel : il est h
 Vérifié le 11 novembre 2026 sur dotclear.watch : Claude se connecte sans OAuth à une adresse `https://…/api/mcp/<clé>`
 et utilise les six outils de lecture.
 
-Reste à vérifier :
+Vérifié le même jour sur un blog sans réécriture d'URL : l'adresse `https://…/index.php?api/mcp/<clé>` est acceptée
+telle quelle par Claude, lecture, écriture et publication comprises.
 
-* Qu'un client accepte une adresse de connecteur avec chaîne de requête (`index.php?api/mcp/<clé>`).
+Piège rencontré : un plugin qui intercepte toutes les pages publiques (ex : disclaimer) renvoie sa page HTML à la place
+de la réponse, et le client refuse alors le connecteur avec un message trompeur sur l'authentification.
 
 ## Références
 

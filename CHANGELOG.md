@@ -1,11 +1,9 @@
 ClaudetteMcp 0.3 - 2026.11.12
 ===========================================================
-* Add roadmap to CONCEPTION.md
 * Add tools for pages, media, comments, categories and notes
-* Add pagination to list_media, hide empty spam filter
-* Move featuredMedia support to ThirdParty directory through behaviors
-* Add periodical support to ThirdParty directory
-* Move periodical support to the plugin periodical
+* Add pagination to list_media
+* Add behavior ClaudetteMcpAddMediaLink for media link types
+* Add featuredMedia support in ThirdParty directory
 
 ClaudetteMcp 0.2 - 2026.11.11
 ===========================================================

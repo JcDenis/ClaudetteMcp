@@ -26,7 +26,8 @@ class GetPost extends PostTool
     public function description(): string
     {
         return 'Get an entry of the blog with its excerpt and content, in the source format of the entry ' .
-            '(xhtml, wiki, markdown). An entry which is not published is readable only by its author or by a content administrator.';
+            '(xhtml, wiki, markdown). An entry which is not published is readable only by its author or by a content administrator. ' .
+            '"date" is in the timezone of the entry, "created" and "updated" are in the server time.';
     }
 
     public function properties(): array

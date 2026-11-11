@@ -200,8 +200,12 @@ Le média à la une n'est ni dans le cœur ni dans un plugin officiel : il est h
 
 ## Points à vérifier
 
+Vérifié le 11 novembre 2026 sur dotclear.watch : Claude se connecte sans OAuth à une adresse `https://…/api/mcp/<clé>`
+et utilise les six outils de lecture.
+
+Reste à vérifier :
+
 * Qu'un client accepte une adresse de connecteur avec chaîne de requête (`index.php?api/mcp/<clé>`).
-* Le comportement exact d'un client face à un serveur sans OAuth (pas de 401 pendant la découverte).
 
 ## Références
 

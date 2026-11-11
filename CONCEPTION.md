@@ -214,11 +214,10 @@ des plugins tiers, écrit uniquement avec les behaviors de ClaudetteMcp, comme s
 eux-mêmes : aujourd'hui le lien `featured` du plugin featuredMedia, déclaré seulement si ce plugin est actif.
 Le jour où un plugin tiers fournit lui-même son support, il suffit de supprimer sa classe de ce répertoire.
 
-Deuxième plugin tiers pris en charge de la même façon, periodical : deux outils ajoutés par le behavior
-`ClaudetteMcpAddTool`, `list_periods` et `set_post_period`, proposés si le plugin est actif et activé sur le blog.
-Ils lisent la table `periodical` du plugin et écrivent le lien billet/période dans la table `meta` du cœur
-(type `periodical`), sans appeler aucune classe du plugin : PHPStan et les tests n'ont donc pas besoin de lui.
-La contrepartie est que ce code suit la structure des données du plugin, et doit être revu si elle change.
+Règle retenue : un plugin porte lui-même sa liaison avec ClaudetteMcp, dans son propre code, où il utilise
+ses propres classes et la fait évoluer avec lui (exemple : le plugin periodical et ses outils `list_periods`
+et `set_post_period`). `src/ThirdParty` est réservé aux plugins d'autres auteurs qui ne le feront pas,
+et doit rester petit : chaque outil ajouté est un outil de plus à valider à la connexion du connecteur.
 `list_tags` et les mots-clés des billets dépendent du plugin officiel tags, et ne sont proposés que s'il est actif.
 
 ## Étapes

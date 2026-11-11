@@ -27,7 +27,7 @@ $this->registerModule(
         'requires' => [
             ['php', '8.3'],
             ['core', '2.40'],
-            ['ApiServer', '0.17'],
+            ['ApiServer', '1.0'],
         ],
         'permissions' => 'My',
         'type'        => 'plugin',

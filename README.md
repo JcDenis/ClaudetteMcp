@@ -22,7 +22,7 @@ See [CONCEPTION.md](CONCEPTION.md) (in French) for the design and the roadmap.
 
 * Dotclear 2.40
 * PHP 8.3+
-* Plugin [ApiServer](https://github.com/JcDenis/ApiServer) 0.17+, active on the blog
+* Plugin [ApiServer](https://github.com/JcDenis/ApiServer) 1.0+, active on the blog
 * A blog publicly reachable through HTTPS
 
 ## USAGE

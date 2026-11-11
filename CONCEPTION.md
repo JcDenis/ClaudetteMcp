@@ -1,7 +1,7 @@
 # ClaudetteMcp — Conception
 
 Document de conception du plugin Dotclear **ClaudetteMcp**.
-État au 11 novembre 2026 : étapes 1 à 4 codées (branche `raw-endpoint` d'ApiServer ; branches `readonly`, `write` et `status` de ClaudetteMcp).
+État au 11 novembre 2026 : étapes 1 à 4 codées et publiées (ApiServer 1.0).
 
 ## Objectif
 

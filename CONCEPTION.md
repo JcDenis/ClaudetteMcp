@@ -198,7 +198,8 @@ Règles :
   de n'être utilisé que sur demande explicite de l'utilisateur.
 * Les pings ne sont jamais envoyés.
 * Réponses courtes : listes paginées, contenu complet d'un billet uniquement via `get_post`.
-* Les types d'entrées autres que `post` (pages, …) viendront plus tard.
+* Les pages (plugin officiel pages) passent par les mêmes outils, avec un argument `type` proposé seulement
+  si le plugin est actif et que l'utilisateur a la permission `pages` ou `contentadmin`.
 * `update_post` ne change jamais le statut, mais une modification d'un billet déjà publié est visible aussitôt.
 * Formats en écriture : `xhtml` et `wiki` seulement. Les formateurs ne sont enregistrés par les éditeurs que dans l'admin ;
   le HTML n'en a pas besoin et le wiki est enregistré par l'outil comme le fait dcLegacyEditor. Un billet dans un autre
@@ -206,7 +207,8 @@ Règles :
 * Les mots-clés sont écrits directement avec `App::meta()`, le plugin tags ne les gérant que depuis le formulaire de l'admin.
 * Les dates sont dans le fuseau de l'utilisateur, comme dans l'admin.
 
-Le média à la une n'est ni dans le cœur ni dans un plugin officiel : il est hors périmètre.
+Le média à la une n'est ni dans le cœur ni dans un plugin officiel, mais il n'est qu'un type de lien (`featured`)
+de la table `post_media` du cœur : `attach_media` le propose seulement si le plugin featuredMedia est actif.
 `list_tags` et les mots-clés des billets dépendent du plugin officiel tags, et ne sont proposés que s'il est actif.
 
 ## Étapes
@@ -228,14 +230,33 @@ plutôt que sur un utilisateur dédié. La liste des outils est donc le vrai gar
 pas d'accès aux paramètres du blog, aux utilisateurs, aux permissions, aux plugins, aux thèmes ni aux clés.
 Le README doit continuer à conseiller un utilisateur dédié.
 
-Outils prévus, par ordre d'utilité :
+Outils ajoutés après la 0.2 :
 
-1. Média à la une et annexes d'un billet (lier et délier un média existant).
-2. Envoi d'un média.
-3. Pages (plugin officiel `pages`).
-4. Commentaires : lister, lire, changer le statut. Pas de réponse au nom de l'utilisateur.
-5. Création de catégorie.
-6. Notes personnelles du billet (`post_notes`), en lecture et en écriture.
+| Outil | Type | Permission Dotclear |
+|---|---|---|
+| `attach_media`, `detach_media` | écriture | usage (ses billets) ou contentadmin, et media |
+| `upload_media` | écriture | media |
+| `list_posts`, `create_post` avec `type: page` | lecture, écriture | celles des billets, et pages ou contentadmin |
+| `list_comments` | lecture | usage (commentaires de ses billets) ou contentadmin (tous) |
+| `set_comment_status` | écriture | publish (commentaires de ses billets) ou contentadmin |
+| `create_category` | écriture | categories |
+| argument `notes` de `create_post` et `update_post` | écriture | celles des billets |
+
+Règles :
+
+* Lier un média demande que le billet soit modifiable par l'utilisateur. L'admin de Dotclear ne le vérifie pas,
+  l'outil est donc plus strict que l'admin, jamais moins.
+* Un billet n'a qu'un média à la une : en lier un autre remplace le précédent.
+* `upload_media` reçoit le fichier en base64, ne remplace jamais un fichier existant et laisse le cœur refuser
+  les types interdits (`media_exclusion`). Pas d'envoi depuis une adresse web : le serveur irait chercher
+  une adresse choisie par l'assistant, y compris sur le réseau interne.
+* En contexte public le cœur ne donne que les commentaires publiés : `list_comments` fait sa propre requête,
+  avec la règle de l'admin (tous pour un administrateur de contenu, ceux de ses billets sinon).
+* Les adresses email et IP des visiteurs ne sont jamais transmises à l'assistant.
+* Le texte d'un commentaire vient d'un visiteur : les descriptions des outils demandent à l'assistant de le traiter
+  comme une donnée, et de ne modérer que sur demande explicite de l'utilisateur.
+* Pas de réponse à un commentaire au nom de l'utilisateur, pas de suppression.
+* Les notes d'un billet ne sont lues que par ceux qui peuvent le modifier.
 
 Ensuite : choix des familles d'outils (billets, pages, médias, commentaires) à la création de la clé.
 

@@ -23,11 +23,86 @@ use Dotclear\Plugin\ClaudetteMcp\McpToolException;
 abstract class PostTool extends McpTool
 {
     /**
-     * Get the entries type the tool works on.
+     * The permission of the official plugin "pages".
+     *
+     * Not taken from the plugin class as the plugin could be disabled.
      */
-    protected function postType(): string
+    protected const PERMISSION_PAGES = 'pages';
+
+    /**
+     * Get the entries types current user can use.
+     *
+     * Pages need the official plugin "pages" and its permission, like in the blog administration.
+     *
+     * @return  array<int, string>
+     */
+    protected function types(): array
     {
-        return 'post';
+        $types = ['post'];
+        if (App::postTypes()->exists('page') && $this->can(self::PERMISSION_PAGES, App::auth()::PERMISSION_CONTENT_ADMIN)) {
+            $types[] = 'page';
+        }
+
+        return $types;
+    }
+
+    /**
+     * Get entries type argument.
+     *
+     * @param   array<string, mixed>    $args   The arguments
+     *
+     * @throws  McpToolException    If type can not be used
+     */
+    protected function type(array $args): string
+    {
+        $type = $this->str($args, 'type', 'post');
+        if (!in_array($type, $this->types(), true)) {
+            throw new McpToolException('Unknown entry type, use one of: ' . implode(', ', $this->types()));
+        }
+
+        return $type;
+    }
+
+    /**
+     * Get entries type argument definition, if there is a choice.
+     *
+     * @return  array<string, array<string, mixed>>
+     */
+    protected function typeProperties(string $description): array
+    {
+        return count($this->types()) < 2 ? [] : [
+            'type' => [
+                'type'        => 'string',
+                'enum'        => $this->types(),
+                'description' => $description,
+            ],
+        ];
+    }
+
+    /**
+     * Get media link types current blog can use.
+     *
+     * "featured" is the link type of the plugin featuredMedia, a post has only one of them.
+     *
+     * @return  array<int, string>
+     */
+    protected function links(): array
+    {
+        $links = ['attachment'];
+        if (App::plugins()->moduleExists('featuredMedia')) {
+            $links[] = 'featured';
+        }
+
+        return $links;
+    }
+
+    /**
+     * Check if current user can update an entry.
+     */
+    protected function editable(MetaRecord $rs): bool
+    {
+        return $this->can(App::auth()::PERMISSION_CONTENT_ADMIN)
+            || ($this->can(App::auth()::PERMISSION_USAGE) && $rs->strField('user_id') === App::auth()->userID());
     }
 
     /**
@@ -51,11 +126,12 @@ abstract class PostTool extends McpTool
      * Published entries are visible to everyone. Other entries are visible
      * to content administrators, or to their author.
      *
-     * @param   string  $status     The status name or "all"
+     * @param   string                      $status     The status name or "all"
+     * @param   string|array<int, string>   $type       The entries type(s)
      *
      * @return  array<string, mixed>
      */
-    protected function visibility(string $status): array
+    protected function visibility(string $status, string|array $type = 'post'): array
     {
         $statuses = $this->statuses();
 
@@ -70,7 +146,7 @@ abstract class PostTool extends McpTool
         // In frontend context, Dotclear adds published entries to the requested statuses: limit to them again
         $sql    = 'AND P.post_status IN (' . implode(',', $values) . ') ';
         $params = [
-            'post_type'   => $this->postType(),
+            'post_type'   => $type,
             'post_status' => $values,
         ];
 
@@ -92,7 +168,7 @@ abstract class PostTool extends McpTool
     }
 
     /**
-     * Get an entry current user can see.
+     * Get an entry current user can see, whatever its type.
      *
      * @throws  McpToolException    If entry is not found
      */
@@ -103,13 +179,13 @@ abstract class PostTool extends McpTool
         }
 
         // Published entry
-        $params            = $this->visibility('published');
+        $params            = $this->visibility('published', $this->types());
         $params['post_id'] = $id;
         $rs                = App::blog()->getPosts($params);
 
         // Or any status limited to what user can see
         if ($rs->isEmpty()) {
-            $params            = $this->visibility('all');
+            $params            = $this->visibility('all', $this->types());
             $params['post_id'] = $id;
             $rs                = App::blog()->getPosts($params);
         }
@@ -151,12 +227,12 @@ abstract class PostTool extends McpTool
             ],
             'category_id' => [
                 'type'        => 'integer',
-                'description' => 'The category ID (see list_categories), 0 for no category.',
+                'description' => 'The category ID (see list_categories), 0 for no category. Ignored for pages.',
             ],
             'tags' => [
                 'type'        => 'array',
                 'items'       => ['type' => 'string'],
-                'description' => 'The complete list of tags of the entry (it replaces existing tags).',
+                'description' => 'The complete list of tags of the entry (it replaces existing tags). Ignored for pages.',
             ],
             'date' => [
                 'type'        => 'string',
@@ -168,7 +244,7 @@ abstract class PostTool extends McpTool
             ],
             'selected' => [
                 'type'        => 'boolean',
-                'description' => 'Mark the entry as selected.',
+                'description' => 'Mark the entry as selected. For a page, it hides the page from the widget listing pages.',
             ],
             'open_comments' => [
                 'type'        => 'boolean',
@@ -178,7 +254,16 @@ abstract class PostTool extends McpTool
                 'type'        => 'boolean',
                 'description' => 'Accept trackbacks on the entry.',
             ],
-        ];
+            'notes' => [
+                'type'        => 'string',
+                'description' => 'Personal notes about the entry, in plain text. They are never displayed on the blog. Empty for no notes.',
+            ],
+        ] + (in_array('page', $this->types(), true) ? [
+            'position' => [
+                'type'        => 'integer',
+                'description' => 'The position of a page among pages, lowest first. Ignored for posts.',
+            ],
+        ] : []);
     }
 
     /**
@@ -235,6 +320,10 @@ abstract class PostTool extends McpTool
      */
     protected function setCategory(Cursor $cur, int $cat_id): void
     {
+        if ($cur->strField('post_type') === 'page') {
+            return;
+        }
+
         if ($cat_id < 1) {
             $cur->setField('cat_id', null);
 
@@ -253,9 +342,9 @@ abstract class PostTool extends McpTool
      *
      * @param   array<int, string>  $tags   The tags
      */
-    protected function setTags(int $id, array $tags): void
+    protected function setTags(int $id, array $tags, string $type = 'post'): void
     {
-        if (!App::plugins()->moduleExists('tags')) {
+        if ($type === 'page' || !App::plugins()->moduleExists('tags')) {
             return;
         }
 
@@ -275,10 +364,38 @@ abstract class PostTool extends McpTool
         $post = $this->describe($this->fetch($id));
 
         if (App::config()->adminUrl() !== '') {
-            $post['edit_url'] = App::config()->adminUrl() . (str_ends_with(App::config()->adminUrl(), '/') ? '' : '/') . 'index.php?process=Post&id=' . $id;
+            // Admin URLs of entries types are only known in backend
+            $post['edit_url'] = App::config()->adminUrl() . (str_ends_with(App::config()->adminUrl(), '/') ? '' : '/') .
+                'index.php?process=' . ($post['type'] === 'page' ? 'Plugin&p=pages&act=page' : 'Post') . '&id=' . $id;
         }
 
         return $post;
+    }
+
+    /**
+     * Describe media linked to an entry.
+     *
+     * @return  array<int, array<string, mixed>>
+     */
+    protected function media(int $id): array
+    {
+        $rs = App::postMedia()->getPostMedia([
+            'post_id'   => $id,
+            'link_type' => $this->links(),
+            'columns'   => ['PM.link_type'],
+        ]);
+
+        $media = [];
+        while ($rs->fetch()) {
+            $media[] = [
+                'id'    => $rs->intField('media_id'),
+                'link'  => $rs->strField('link_type'),
+                'path'  => $rs->strField('media_file'),
+                'title' => $rs->strField('media_title'),
+            ];
+        }
+
+        return $media;
     }
 
     /**
@@ -294,6 +411,7 @@ abstract class PostTool extends McpTool
 
         $post = [
             'id'       => $rs->intField('post_id'),
+            'type'     => $type,
             'title'    => $rs->strField('post_title'),
             'url'      => App::blog()->url() . App::postTypes()->get($type)->publicUrl(Html::sanitizeURL($rs->strField('post_url')), false),
             'date'     => $rs->strField('post_dt'),
@@ -318,9 +436,20 @@ abstract class PostTool extends McpTool
                 'open_trackback' => $rs->boolField('post_open_tb'),
                 'nb_comments'    => $rs->intField('nb_comment'),
                 'nb_trackbacks'  => $rs->intField('nb_trackback'),
+                'media'          => $this->media($rs->intField('post_id')),
                 'excerpt'        => $rs->strField('post_excerpt'),
                 'content'        => $rs->strField('post_content'),
             ];
+
+            // Notes are personal: only for those who can update the entry
+            if ($this->editable($rs)) {
+                $post['notes'] = $rs->strField('post_notes');
+            }
+        }
+
+        if ($type === 'page') {
+            unset($post['category'], $post['tags']);
+            $post['position'] = $rs->intField('post_position');
         }
 
         return $post;

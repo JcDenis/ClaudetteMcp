@@ -49,6 +49,8 @@ class GetBlog extends McpTool
                 'write'         => $this->can(App::auth()::PERMISSION_USAGE, App::auth()::PERMISSION_CONTENT_ADMIN),
                 'publish'       => $this->can(App::auth()::PERMISSION_PUBLISH, App::auth()::PERMISSION_CONTENT_ADMIN),
                 'media'         => $this->can(App::auth()::PERMISSION_MEDIA, App::auth()::PERMISSION_MEDIA_ADMIN),
+                'categories'    => $this->can(App::auth()::PERMISSION_CATEGORIES),
+                'pages'         => App::postTypes()->exists('page') && $this->can('pages', App::auth()::PERMISSION_CONTENT_ADMIN),
             ],
         ];
     }

@@ -69,11 +69,12 @@ class UpdatePost extends PostTool
         $id = $this->int($args, 'id');
         $rs = $this->fetch($id);
 
-        if (!$this->can(App::auth()::PERMISSION_CONTENT_ADMIN) && $rs->strField('user_id') !== App::auth()->userID()) {
+        if (!$this->editable($rs)) {
             throw new McpToolException('You are not allowed to update this entry');
         }
 
         $format = $rs->strField('post_format');
+        $type   = $rs->strField('post_type');
         $this->prepareFormat($format);
 
         $title   = $this->has($args, 'title') ? $this->str($args, 'title') : $rs->strField('post_title');
@@ -86,6 +87,7 @@ class UpdatePost extends PostTool
 
         // Dotclear needs these fields on each update, even if they do not change
         $cur = App::blog()->openPostCursor();
+        $cur->setStrField('post_type', $type);
         $cur->setStrField('post_title', $title);
         $cur->setStrField('post_content', $content);
         $cur->setStrField('post_excerpt', $this->has($args, 'excerpt') ? $this->str($args, 'excerpt') : $rs->strField('post_excerpt'));
@@ -107,6 +109,14 @@ class UpdatePost extends PostTool
             $cur->setIntField('post_open_tb', (int) $this->bool($args, 'open_trackbacks'));
         }
 
+        if ($this->has($args, 'notes')) {
+            $cur->setStrField('post_notes', $this->str($args, 'notes'));
+        }
+
+        if ($this->has($args, 'position') && $type === 'page') {
+            $cur->setIntField('post_position', $this->int($args, 'position'));
+        }
+
         if ($this->has($args, 'category_id')) {
             $this->setCategory($cur, $this->int($args, 'category_id'));
         }
@@ -114,7 +124,7 @@ class UpdatePost extends PostTool
         App::blog()->updPost($id, $cur);
 
         if ($this->has($args, 'tags')) {
-            $this->setTags($id, $this->strings($args, 'tags'));
+            $this->setTags($id, $this->strings($args, 'tags'), $type);
         }
 
         return $this->written($id);

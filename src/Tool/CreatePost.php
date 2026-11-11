@@ -35,7 +35,7 @@ class CreatePost extends PostTool
 
     public function properties(): array
     {
-        return $this->writeProperties() + [
+        return $this->typeProperties('Entry type, default: post.') + $this->writeProperties() + [
             'format' => [
                 'type'        => 'string',
                 'enum'        => ['xhtml', 'wiki'],
@@ -64,6 +64,8 @@ class CreatePost extends PostTool
         $title   = $this->str($args, 'title');
         $content = $this->str($args, 'content');
         $format  = $this->str($args, 'format', 'xhtml');
+        $type    = $this->type($args);
+        $page    = $type === 'page';
 
         if ($title === '' || $content === '') {
             throw new McpToolException('An entry needs a title and a content');
@@ -72,7 +74,7 @@ class CreatePost extends PostTool
         $this->prepareFormat($format);
 
         $cur = App::blog()->openPostCursor();
-        $cur->setStrField('post_type', $this->postType());
+        $cur->setStrField('post_type', $type);
         $cur->setStrField('user_id', App::auth()->userID());
         $cur->setStrField('post_title', $title);
         $cur->setStrField('post_content', $content);
@@ -82,14 +84,23 @@ class CreatePost extends PostTool
         $cur->setStrField('post_dt', $this->has($args, 'date') ? $this->date($this->str($args, 'date')) : '');
         $cur->setIntField('post_status', App::status()->post()::UNPUBLISHED);
         $cur->setIntField('post_selected', (int) $this->bool($args, 'selected'));
-        $cur->setIntField('post_open_comment', (int) $this->bool($args, 'open_comments', App::blog()->settings()->get('system')->getBool('allow_comments', false)));
-        $cur->setIntField('post_open_tb', (int) $this->bool($args, 'open_trackbacks', App::blog()->settings()->get('system')->getBool('allow_trackbacks', false)));
+        $cur->setIntField('post_open_comment', (int) $this->bool($args, 'open_comments', !$page && App::blog()->settings()->get('system')->getBool('allow_comments', false)));
+        $cur->setIntField('post_open_tb', (int) $this->bool($args, 'open_trackbacks', !$page && App::blog()->settings()->get('system')->getBool('allow_trackbacks', false)));
+        $cur->setStrField('post_notes', $this->str($args, 'notes'));
+        if ($page) {
+            $cur->setIntField('post_position', $this->int($args, 'position'));
+        }
         $this->setCategory($cur, $this->int($args, 'category_id'));
+
+        if ($page) {
+            // Like the plugin pages does: URL of a page has no date (not saved in blog settings)
+            App::blog()->settings()->get('system')->set('post_url_format', '{t}');
+        }
 
         $id = App::blog()->addPost($cur);
 
         if ($this->has($args, 'tags')) {
-            $this->setTags($id, $this->strings($args, 'tags'));
+            $this->setTags($id, $this->strings($args, 'tags'), $type);
         }
 
         return $this->written($id);

@@ -36,6 +36,12 @@ class McpTools
             new Tool\CreatePost(),
             new Tool\UpdatePost(),
             new Tool\SetPostStatus(),
+            new Tool\CreateCategory(),
+            new Tool\UploadMedia(),
+            new Tool\AttachMedia(),
+            new Tool\DetachMedia(),
+            new Tool\ListComments(),
+            new Tool\SetCommentStatus(),
         ]);
 
         # --BEHAVIOR-- ClaudetteMcpAddTool -- ArrayObject

@@ -27,7 +27,7 @@ class ListPosts extends PostTool
 
     public function description(): string
     {
-        return 'List entries of the blog, most recent first, without their content. ' .
+        return 'List entries of the blog, without their content: posts, most recent first, or pages, by position, if the blog has pages. ' .
             'Only published entries are listed by default. With another status or "all", ' .
             'entries of other authors are listed only if the user is a content administrator. ' .
             'Use get_post to read the content of an entry.';
@@ -35,7 +35,7 @@ class ListPosts extends PostTool
 
     public function properties(): array
     {
-        return [
+        return $this->typeProperties('Entries type, default: post.') + [
             'status' => [
                 'type'        => 'string',
                 'enum'        => ['published', 'unpublished', 'scheduled', 'pending', 'all'],
@@ -66,7 +66,8 @@ class ListPosts extends PostTool
 
     public function call(array $args): array
     {
-        $params = $this->visibility($this->str($args, 'status', 'published'));
+        $type   = $this->type($args);
+        $params = $this->visibility($this->str($args, 'status', 'published'), $type);
         $limit  = $this->int($args, 'limit', 20, 1, 50);
         $page   = $this->int($args, 'page', 1, 1);
 
@@ -87,7 +88,7 @@ class ListPosts extends PostTool
         }
 
         $params['no_content'] = true;
-        $params['order']      = 'post_dt DESC';
+        $params['order']      = $type === 'page' ? 'post_position ASC, post_title ASC' : 'post_dt DESC';
         $params['limit']      = [($page - 1) * $limit, $limit];
 
         $rs = isset($params['meta_id']) ? App::meta()->getPostsByMeta($params) : App::blog()->getPosts($params);

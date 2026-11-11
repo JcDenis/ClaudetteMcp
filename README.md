@@ -15,7 +15,7 @@ It adds a [Model Context Protocol](https://modelcontextprotocol.io) server to a 
 an AI assistant (Claude or any MCP client) can then use tools to work on the blog,
 without a browser and without knowing any password.
 
-**This is an early version: tools read the blog, create, update and publish entries, but never delete anything.**
+**This is an early version: tools read the blog, create, update and publish entries, upload media and moderate comments, but never delete anything.**
 See [CONCEPTION.md](CONCEPTION.md) (in French) for the design and the roadmap.
 
 ## REQUIREMENTS
@@ -47,14 +47,26 @@ The assistant acts with the permissions of the user who created the key, never m
 | Tool | Description |
 |---|---|
 | `get_blog` | Blog information and what the user is allowed to do |
-| `list_posts` | List entries, by status, category, tag or search |
-| `get_post` | Read an entry with its excerpt and content |
+| `list_posts` | List posts or pages, by status, category, tag or search |
+| `get_post` | Read a post or a page with its excerpt, content, linked media and notes |
 | `list_categories` | List categories |
 | `list_tags` | List tags (plugin tags) |
 | `list_media` | List a directory of the media library (media permission) |
-| `create_post` | Create an entry, never published (HTML or wiki) |
-| `update_post` | Update an entry, without changing its status |
-| `set_post_status` | Publish, schedule, unpublish an entry (publish permission) |
+| `list_comments` | List comments and trackbacks, by status or entry |
+| `create_post` | Create a post or a page, never published (HTML or wiki) |
+| `update_post` | Update a post or a page, without changing its status |
+| `set_post_status` | Publish, schedule, unpublish a post or a page (publish permission) |
+| `create_category` | Create a category (categories permission) |
+| `upload_media` | Add a file to the media library, never replacing one (media permission) |
+| `attach_media` | Link a media to an entry, as attachment or as featured media (plugin featuredMedia) |
+| `detach_media` | Remove the link between a media and an entry |
+| `set_comment_status` | Publish, unpublish or mark as junk a comment (publish permission) |
+
+Pages need the plugin pages and its permission.
+A key never gives more than the Dotclear permissions of its user: with an administrator account, the assistant can do
+on contents what an administrator does. Prefer a key created with a dedicated user having only the permissions you need.
+Comments are listed like in the blog administration (all of them for a content administrator, those of his entries for another user),
+without the email and IP addresses of their authors.
 
 Entries which are not published are readable only by their author or by a content administrator.
 Writing tools are not available with a read only key, and need the same permissions as in the blog administration.

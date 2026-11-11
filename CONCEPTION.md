@@ -226,6 +226,9 @@ et utilise les six outils de lecture.
 Vérifié le même jour sur un blog sans réécriture d'URL : l'adresse `https://…/index.php?api/mcp/<clé>` est acceptée
 telle quelle par Claude, lecture, écriture et publication comprises.
 
+Vérifié aussi avec une clé « en-tête uniquement » : adresse `…/index.php?api/mcp` sans clé et en-tête `x-api-key`
+saisi dans les réglages du connecteur de Claude, lecture et écriture comprises.
+
 Piège rencontré : un plugin qui intercepte toutes les pages publiques (ex : disclaimer) renvoie sa page HTML à la place
 de la réponse, et le client refuse alors le connecteur avec un message trompeur sur l'authentification.
 

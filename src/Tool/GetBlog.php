@@ -29,7 +29,7 @@ class GetBlog extends McpTool
     public function description(): string
     {
         return 'Get information about the blog (name, URL, language, timezone) and about what the user is allowed to do on it. ' .
-            'Dates of entries are in the blog timezone.';
+            'Dates of entries are in the timezone of their author.';
     }
 
     public function call(array $args): array
@@ -43,6 +43,8 @@ class GetBlog extends McpTool
             'timezone'    => (string) App::blog()->settings()->get('system')->getStr('blog_timezone'),
             'user'        => [
                 'id'            => App::auth()->userID(),
+                'timezone'      => is_string($user_tz = App::auth()->getInfo('user_tz')) ? $user_tz : 'UTC',
+                'lang'          => is_string($user_lang = App::auth()->getInfo('user_lang')) ? $user_lang : '',
                 'content_admin' => $this->can(App::auth()::PERMISSION_CONTENT_ADMIN),
                 'write'         => $this->can(App::auth()::PERMISSION_USAGE, App::auth()::PERMISSION_CONTENT_ADMIN),
                 'publish'       => $this->can(App::auth()::PERMISSION_PUBLISH, App::auth()::PERMISSION_CONTENT_ADMIN),

@@ -1,7 +1,7 @@
 # ClaudetteMcp — Conception
 
 Document de conception du plugin Dotclear **ClaudetteMcp**.
-État au 11 novembre 2026 : étapes 1 et 2 codées (branche `raw-endpoint` d'ApiServer, lecture seule dans ClaudetteMcp).
+État au 11 novembre 2026 : étapes 1 à 3 codées (branche `raw-endpoint` d'ApiServer ; lecture puis écriture dans ClaudetteMcp, branches `readonly` et `write`).
 
 ## Objectif
 
@@ -170,12 +170,13 @@ en-têtes (`Mcp-Method`, `Mcp-Name`). Le serveur est déjà sans état, mais cet
 | `list_categories`, `list_tags` | lecture | API |
 | `list_media` | lecture | API et media |
 
-Les six outils de lecture ci-dessus sont codés. Les suivants restent à faire.
+| `create_post` | écriture | usage |
+| `update_post` | écriture | usage (ses billets) ou contentadmin |
+
+Les outils ci-dessus sont codés. Le suivant reste à faire.
 
 | Outil | Type | Permission Dotclear |
 |---|---|---|
-| `create_post` | écriture | usage |
-| `update_post` | écriture | usage (ses billets) ou contentadmin |
 | `set_post_status` (publier, programmer, mettre en attente) | écriture | publish |
 
 Règles :
@@ -185,6 +186,12 @@ Règles :
 * Les pings ne sont jamais envoyés.
 * Réponses courtes : listes paginées, contenu complet d'un billet uniquement via `get_post`.
 * Les types d'entrées autres que `post` (pages, …) viendront plus tard.
+* `update_post` ne change jamais le statut, mais une modification d'un billet déjà publié est visible aussitôt.
+* Formats en écriture : `xhtml` et `wiki` seulement. Les formateurs ne sont enregistrés par les éditeurs que dans l'admin ;
+  le HTML n'en a pas besoin et le wiki est enregistré par l'outil comme le fait dcLegacyEditor. Un billet dans un autre
+  format (markdown, …) est refusé en écriture.
+* Les mots-clés sont écrits directement avec `App::meta()`, le plugin tags ne les gérant que depuis le formulaire de l'admin.
+* Les dates sont dans le fuseau de l'utilisateur, comme dans l'admin.
 
 Le média à la une n'est ni dans le cœur ni dans un plugin officiel : il est hors périmètre.
 `list_tags` et les mots-clés des billets dépendent du plugin officiel tags, et ne sont proposés que s'il est actif.

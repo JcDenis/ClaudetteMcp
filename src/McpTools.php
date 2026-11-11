@@ -33,6 +33,8 @@ class McpTools
             new Tool\ListCategories(),
             new Tool\ListTags(),
             new Tool\ListMedia(),
+            new Tool\CreatePost(),
+            new Tool\UpdatePost(),
         ]);
 
         # --BEHAVIOR-- ClaudetteMcpAddTool -- ArrayObject

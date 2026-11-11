@@ -102,6 +102,41 @@ abstract class McpTool
     /**
      * @param   array<string, mixed>    $args   The arguments
      */
+    protected function has(array $args, string $name): bool
+    {
+        return isset($args[$name]);
+    }
+
+    /**
+     * @param   array<string, mixed>    $args   The arguments
+     */
+    protected function bool(array $args, string $name, bool $default = false): bool
+    {
+        return isset($args[$name]) && is_bool($args[$name]) ? $args[$name] : $default;
+    }
+
+    /**
+     * @param   array<string, mixed>    $args   The arguments
+     *
+     * @return  array<int, string>
+     */
+    protected function strings(array $args, string $name): array
+    {
+        $values = [];
+        if (isset($args[$name]) && is_array($args[$name])) {
+            foreach ($args[$name] as $value) {
+                if (is_string($value) && trim($value) !== '') {
+                    $values[] = trim($value);
+                }
+            }
+        }
+
+        return array_values(array_unique($values));
+    }
+
+    /**
+     * @param   array<string, mixed>    $args   The arguments
+     */
     protected function int(array $args, string $name, int $default = 0, int $min = 0, int $max = PHP_INT_MAX): int
     {
         $value = isset($args[$name]) && is_numeric($args[$name]) ? (int) $args[$name] : $default;

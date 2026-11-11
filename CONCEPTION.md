@@ -1,7 +1,7 @@
 # ClaudetteMcp — Conception
 
 Document de conception du plugin Dotclear **ClaudetteMcp**.
-État : brouillon du 11 novembre 2026, rien n'est encore codé.
+État au 11 novembre 2026 : étapes 1 et 2 codées (branche `raw-endpoint` d'ApiServer, lecture seule dans ClaudetteMcp).
 
 ## Objectif
 
@@ -18,6 +18,7 @@ d'outils typés, que l'assistant appelle directement.
 * **Jamais de mot de passe confié à l'assistant.**
 * **Cœur et plugins officiels uniquement** : les outils ne s'appuient que sur le cœur de Dotclear et les plugins livrés avec (tags, pages, attachments, …).
 * **Les permissions Dotclear font foi** : l'assistant ne peut rien faire de plus que l'utilisateur qui l'a autorisé.
+  Attention, ce n'est pas automatique : voir « Permissions dans les outils ».
 * Le blog doit être joignable publiquement en HTTPS : les appels partent des serveurs de l'éditeur de l'assistant, pas du poste de l'utilisateur.
 
 ## Architecture
@@ -31,6 +32,18 @@ Deux plugins :
 
 Les outils n'utilisent que les API du cœur (`App::blog()`, `App::media()`, …) sous l'identité de l'utilisateur
 propriétaire de la clé.
+
+### Permissions dans les outils
+
+Les outils s'exécutent dans le contexte public (frontend) du blog. Dans ce contexte, le cœur ne limite pas
+les contenus aux permissions de l'utilisateur :
+
+* `getPosts()` n'applique pas la règle « ses propres billets » de l'admin ;
+* un statut demandé s'**ajoute** aux billets publiés au lieu de filtrer, et n'est pas vérifié.
+
+Chaque outil doit donc vérifier lui-même les permissions. Règle retenue pour les billets :
+les billets publiés sont visibles de tous ; les autres statuts et les billets protégés par mot de passe
+ne sont visibles que de leur auteur ou d'un administrateur de contenu.
 
 ## Authentification : une clé dans l'adresse, pas d'OAuth
 
@@ -58,8 +71,10 @@ https://exemple.tld/api/mcp/<clé>
 https://exemple.tld/sous-dossier/index.php?api/mcp/<clé>
 ```
 
-* La clé se crée dans **l'admin**, dans les préférences utilisateur. L'utilisateur y est authentifié par Dotclear
+* La clé se crée dans **l'admin**, sur une page du plugin (menu Blog). L'utilisateur y est authentifié par Dotclear
   (mot de passe, OTP, clé de sécurité) : l'assistant ne voit jamais d'identifiants.
+* Pourquoi une page dédiée plutôt que les préférences utilisateur : l'adresse est affichée dans la réponse même
+  à la création, sans redirection ni message stocké en base, donc la clé ne transite par aucun stockage.
 * Une clé est liée à **un utilisateur** et à **un seul blog** (décision arrêtée : pas de clé multi-blogs). Sur un multiblog, tout se gère depuis la même admin, avec une clé et un connecteur par blog.
 * Clé longue et aléatoire, **affichée une seule fois**, stockée **hachée**, avec un libellé et une date de création.
 * **Révocable** d'un clic. Durée de vie optionnelle.
@@ -113,7 +128,7 @@ Précautions dans le code du plugin :
 
 * toujours passer `credential_type` à `getCredentials()`, qui vaut `webauthn` par défaut ;
 * toujours passer `blog_id`, sans quoi seules les lignes globales sont lues ;
-* supprimer ses lignes à la désinstallation du plugin ;
+* supprimer ses lignes à la désinstallation du plugin (**reste à faire** : le plugin Uninstaller n'a pas de nettoyeur pour cette table) ;
 * l'export complet du plugin importExport n'inclut pas la table `credential` : après une migration, les clés sont à recréer.
 
 ## Évolutions d'ApiServer
@@ -126,8 +141,10 @@ Précautions dans le code du plugin :
    MCP attend une réponse JSON-RPC nue, avec ses propres codes HTTP.
 3. **Authentification déléguée.** Un endpoint doit pouvoir identifier l'utilisateur autrement que par le jeton JWT
    de l'en-tête `Authorization` (ici : par la clé de l'URL), en surchargeant `checkUser()`.
-4. **Ne pas journaliser la clé.** Les logs d'ApiServer ne doivent enregistrer que l'endpoint, pas ses arguments.
-5. Cache désactivé pour l'endpoint (constante `CACHE` existante).
+4. Cache désactivé pour l'endpoint (constante `CACHE` existante).
+
+Fait sur la branche `raw-endpoint` : `ApiServer::getBody()`, `getJson()`, `ApiServerEndpoint::sendRaw()` et `setVerifiedUser()`.
+Les logs d'ApiServer n'enregistrent que le nom de l'endpoint : la clé n'y apparaît pas.
 
 ## Protocole
 
@@ -137,16 +154,26 @@ Précautions dans le code du plugin :
 * Chaque outil déclare son schéma d'entrée et une annotation **lecture seule** ou **écriture**, pour que le client
   puisse demander confirmation avant d'écrire.
 
-Les détails (noms exacts, en-têtes, version du protocole) sont à vérifier dans la spécification MCP au moment de coder.
+Versions du protocole gérées : `2025-03-26`, `2025-06-18` et `2025-11-25`. Une version inconnue dans l'en-tête
+`MCP-Protocol-Version` reçoit un 400 avec la liste des versions gérées. Un GET reçoit un 405, une notification un 202,
+une clé inconnue, expirée ou sans permission un 404.
+
+**À suivre** : la révision `2026-07-28` du protocole supprime la poignée de main `initialize` et impose de nouveaux
+en-têtes (`Mcp-Method`, `Mcp-Name`). Le serveur est déjà sans état, mais cette révision n'est ni déclarée ni testée.
 
 ## Outils de la v1
 
 | Outil | Type | Permission Dotclear |
 |---|---|---|
-| `get_blog` | lecture | usage |
-| `list_posts`, `get_post` | lecture | usage |
-| `list_categories`, `list_tags` | lecture | usage |
-| `list_media` | lecture | media |
+| `get_blog` | lecture | API (ApiServer) |
+| `list_posts`, `get_post` | lecture | API ; contentadmin ou auteur pour le non publié |
+| `list_categories`, `list_tags` | lecture | API |
+| `list_media` | lecture | API et media |
+
+Les six outils de lecture ci-dessus sont codés. Les suivants restent à faire.
+
+| Outil | Type | Permission Dotclear |
+|---|---|---|
 | `create_post` | écriture | usage |
 | `update_post` | écriture | usage (ses billets) ou contentadmin |
 | `set_post_status` (publier, programmer, mettre en attente) | écriture | publish |

@@ -1,0 +1,85 @@
+# Language: Français
+# Module: ClaudetteMcp - 0.1
+# Date: 2026-11-11 14:00:00
+# Author: Jean-Christian Denis
+
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: ClaudetteMcp 0.1\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2026-11-11T14:00:00+00:00\n"
+"Last-Translator: Jean-Christian Denis\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Connect an AI assistant to your blog through MCP"
+msgstr "Connecter un assistant IA à votre blog via MCP"
+
+msgid "A name to recognize this key, for example the name of the assistant using it."
+msgstr "Un nom pour reconnaître cette clé, par exemple le nom de l'assistant qui l'utilise."
+
+msgid "API server is not active on this blog: keys can not be used until it is activated in blog settings."
+msgstr "Le serveur d'API n'est pas actif sur ce blog : les clés ne peuvent pas être utilisées tant qu'il n'est pas activé dans les paramètres du blog."
+
+msgid "Access"
+msgstr "Accès"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Create a key"
+msgstr "Créer une clé"
+
+msgid "Created"
+msgstr "Créée le"
+
+msgid "Expires"
+msgstr "Expire le"
+
+msgid "Expires:"
+msgstr "Expiration :"
+
+msgid "In %s days"
+msgstr "Dans %s jours"
+
+msgid "Key successfully created. Copy this address now and add it as a connector in your AI assistant, it will not be shown again:"
+msgstr "Clé créée avec succès. Copiez cette adresse maintenant et ajoutez-la comme connecteur dans votre assistant IA, elle ne sera plus affichée :"
+
+msgid "Key successfully revoked."
+msgstr "Clé révoquée avec succès."
+
+msgid "Label"
+msgstr "Libellé"
+
+msgid "Label:"
+msgstr "Libellé :"
+
+msgid "Never"
+msgstr "Jamais"
+
+msgid "Read and write"
+msgstr "Lecture et écriture"
+
+msgid "Read only"
+msgstr "Lecture seule"
+
+msgid "Revoke"
+msgstr "Révoquer"
+
+msgid "This address is a secret: anyone who knows it can act on this blog with your permissions."
+msgstr "Cette adresse est un secret : toute personne qui la connaît peut agir sur ce blog avec vos permissions."
+
+msgid "You have no key for this blog."
+msgstr "Vous n'avez aucune clé pour ce blog."
+
+msgid "You must give a label to the key."
+msgstr "Vous devez donner un libellé à la clé."
+
+msgid "Your keys for this blog"
+msgstr "Vos clés pour ce blog"
+
+msgid "expired"
+msgstr "expirée"

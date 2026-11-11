@@ -22,11 +22,12 @@ class McpEndpoint extends ApiServerEndpoint
     /**
      * The request header used to send the access key.
      *
-     * A dedicated header is used as some web servers do not give Authorization header to PHP.
+     * Claude connectors only send header names from a list approved by Anthropic, X-Api-Key is one of them.
+     * "Authorization: Bearer <key>" is also accepted, but some web servers do not give this header to PHP.
      *
      * @var     string  HEADER
      */
-    public const HEADER = 'X-ClaudetteMcp-Key';
+    public const HEADER = 'X-Api-Key';
 
     /**
      * The access key used for this call, null if there is no valid key.
@@ -52,6 +53,16 @@ class McpEndpoint extends ApiServerEndpoint
     {
         $name   = 'HTTP_' . strtoupper(str_replace('-', '_', self::HEADER));
         $header = isset($_SERVER[$name]) && is_string($_SERVER[$name]) ? trim($_SERVER[$name]) : '';
+
+        if ($header === '') {
+            foreach (['HTTP_AUTHORIZATION', 'REDIRECT_HTTP_AUTHORIZATION'] as $name) {
+                if (isset($_SERVER[$name]) && is_string($_SERVER[$name]) && preg_match('/^Bearer\s+(\S+)$/i', trim($_SERVER[$name]), $match) === 1) {
+                    $header = $match[1];
+
+                    break;
+                }
+            }
+        }
 
         // Key from header first, a key from URL is then ignored
         $key = McpKeys::find($header !== '' ? $header : $this->api->getArg(0));

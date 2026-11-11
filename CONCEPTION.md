@@ -69,12 +69,14 @@ Le client se connecte sans OAuth, avec une clé secrète envoyée dans un en-tê
 ```
 https://exemple.tld/api/mcp
 https://exemple.tld/sous-dossier/index.php?api/mcp
-X-ClaudetteMcp-Key: <clé>
+X-Api-Key: <clé>
 ```
 
 L'en-tête est la voie recommandée (depuis la version 0.2) : la clé n'apparaît plus dans les journaux d'accès du serveur web.
-Un en-tête dédié est utilisé plutôt que `Authorization`, que certaines configurations (Apache avec PHP en CGI)
-ne transmettent pas à PHP sans réglage du serveur.
+Le nom `X-Api-Key` n'est pas libre : les connecteurs de Claude n'envoient que des noms d'en-tête d'une liste approuvée
+par Anthropic (`authorization`, `x-api-key`, `x-auth-token`, …), et refusent les autres à l'enregistrement.
+`Authorization: Bearer <clé>` est aussi accepté par le plugin, mais n'est pas la voie recommandée : certaines
+configurations (Apache avec PHP en CGI) ne transmettent pas cet en-tête à PHP sans réglage du serveur.
 
 Pour les clients qui ne savent pas envoyer d'en-tête, une clé peut aussi être acceptée dans l'adresse
 (`…/api/mcp/<clé>`), si l'option « en-tête uniquement » de la clé est décochée. Les clés créées en 0.1 restent

@@ -22,7 +22,7 @@ $this->registerModule(
     'Claudette MCP',
     'Connect an AI assistant to your blog through MCP',
     'Jean-Christian Paul Denis and Contributors',
-    '0.3',
+    '0.3.1',
     [
         'requires' => [
             ['php', '8.3'],
@@ -34,6 +34,6 @@ $this->registerModule(
         'support'     => 'https://github.com/JcDenis/' . $this->id . '/issues',
         'details'     => 'https://github.com/JcDenis/' . $this->id . '/blob/master/README.md',
         'repository'  => 'https://raw.githubusercontent.com/JcDenis/' . $this->id . '/master/dcstore.xml',
-        'date'        => '2026-11-11T23:18:16+00:00',
+        'date'        => '2026-11-14T18:21:49+00:00',
     ]
 );

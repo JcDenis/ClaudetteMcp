@@ -1,3 +1,9 @@
+ClaudetteMcp 0.3.1 - 2026.11.14
+===========================================================
+* Clean CHANGELOG
+* [docs] Add a user guide in French, with screenshots
+* [docs] Add admin help in English and French
+
 ClaudetteMcp 0.3 - 2026.11.12
 ===========================================================
 * Add tools for pages, media, comments, categories and notes

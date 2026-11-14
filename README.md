@@ -14,6 +14,7 @@ _ClaudetteMcp_ is a plugin for the open-source web publishing software called [D
 It adds a [Model Context Protocol](https://modelcontextprotocol.io) server to a blog:
 an AI assistant (Claude or any MCP client) can then use tools to work on the blog,
 without a browser and without knowing any password.
+A [user guide in French](https://github.com/JcDenis/ClaudetteMcp/blob/master/docs/fr/utilisation.md) is available.
 
 **This is an early version: tools read the blog, create, update and publish entries, upload media and moderate comments, but never delete anything.**
 See [CONCEPTION.md](CONCEPTION.md) (in French) for the design and the roadmap.
@@ -94,6 +95,7 @@ currently the featured media of the plugin featuredMedia.
 
 ## LINKS
 
+* [User guide (in French)](https://github.com/JcDenis/ClaudetteMcp/blob/master/docs/fr/utilisation.md)
 * [License](https://github.com/JcDenis/ClaudetteMcp/blob/master/LICENSE)
 * [Packages & details](https://github.com/JcDenis/ClaudetteMcp/releases)
 * [Issues & security](https://github.com/JcDenis/ClaudetteMcp/issues)

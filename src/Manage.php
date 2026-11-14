@@ -141,6 +141,7 @@ class Manage
         (new Text('h3', __('Create a key')))->render() .
         self::keyForm()->render();
 
+        App::backend()->page()->helpBlock(My::id() . '-index');
         App::backend()->page()->closeModule();
     }
 

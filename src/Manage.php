@@ -260,12 +260,12 @@ class Manage
                 ->rows([
                     (new Tr())
                         ->cols([
-                            (new Th())->text(__('Label'))->scope('col'),
-                            (new Th())->text(__('Access'))->scope('col'),
-                            (new Th())->text(__('Key sent by'))->scope('col'),
-                            (new Th())->text(__('Created'))->scope('col'),
-                            (new Th())->text(__('Expires'))->scope('col'),
-                            (new Th())->text(__('Action'))->scope('col'),
+                            (new Th())->text(__('Label'))->scope('col')->class('nowrap'),
+                            (new Th())->text(__('Access'))->scope('col')->class('nowrap'),
+                            (new Th())->text(__('Key sent by'))->scope('col')->class('nowrap'),
+                            (new Th())->text(__('Created'))->scope('col')->class('nowrap'),
+                            (new Th())->text(__('Expires'))->scope('col')->class('nowrap'),
+                            (new Th())->text(__('Action'))->scope('col')->class('nowrap'),
                         ]),
                 ]))
             ->tbody((new Tbody())->rows($rows));

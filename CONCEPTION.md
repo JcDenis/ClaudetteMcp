@@ -214,6 +214,12 @@ des plugins tiers, écrit uniquement avec les behaviors de ClaudetteMcp, comme s
 eux-mêmes : aujourd'hui le lien `featured` du plugin featuredMedia, déclaré seulement si ce plugin est actif.
 Le jour où un plugin tiers fournit lui-même son support, il suffit de supprimer sa classe de ce répertoire.
 
+Les outils des billets ne voient que les types `post` et `page` (pages avec le plugin officiel et sa permission).
+Les billets d'autres types appartiennent à leur plugin, qui a ses propres règles : un module d'un dépôt, par exemple,
+ne doit jamais être publié par `set_post_status`, cela contournerait son processus de validation. Un plugin qui
+veut exposer son type aux outils l'ajoute avec le behavior `ClaudetteMcpAddPostType` (un `ArrayObject` de types),
+après avoir vérifié lui-même les permissions de l'utilisateur ; un type inconnu de Dotclear est ignoré.
+
 Règle retenue : un plugin porte lui-même sa liaison avec ClaudetteMcp, dans son propre code, où il utilise
 ses propres classes et la fait évoluer avec lui (exemple : le plugin periodical et ses outils `list_periods`
 et `set_post_period`). `src/ThirdParty` est réservé aux plugins d'autres auteurs qui ne le feront pas,

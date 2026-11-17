@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\ClaudetteMcp\Tool;
 
+use ArrayObject;
 use DateTimeImmutable;
 use Dotclear\App;
 use Dotclear\Database\Cursor;
@@ -14,6 +15,7 @@ use Dotclear\Plugin\ClaudetteMcp\McpMediaLink;
 use Dotclear\Plugin\ClaudetteMcp\McpMediaLinks;
 use Dotclear\Plugin\ClaudetteMcp\McpTool;
 use Dotclear\Plugin\ClaudetteMcp\McpToolException;
+use Dotclear\Plugin\ClaudetteMcp\My;
 
 /**
  * @brief       ClaudetteMcp entries tools helper.
@@ -34,7 +36,10 @@ abstract class PostTool extends McpTool
     /**
      * Get the entries types current user can use.
      *
-     * Pages need the official plugin "pages" and its permission, like in the blog administration.
+     * Only posts, and pages with the official plugin "pages" and its permission, like in the blog administration.
+     * Entries of other types belong to their plugin (a repository module, an event...) which has its own rules:
+     * tools must not read or change them, unless the plugin adds its type with the behavior ClaudetteMcpAddPostType.
+     * The plugin then checks the permissions of the current user itself, before adding its type.
      *
      * @return  array<int, string>
      */
@@ -43,6 +48,20 @@ abstract class PostTool extends McpTool
         $types = ['post'];
         if (App::postTypes()->exists('page') && $this->can(self::PERMISSION_PAGES, App::auth()::PERMISSION_CONTENT_ADMIN)) {
             $types[] = 'page';
+        }
+
+        /**
+         * @var     ArrayObject<int, mixed>     $more
+         */
+        $more = new ArrayObject();
+
+        # --BEHAVIOR-- ClaudetteMcpAddPostType -- ArrayObject
+        App::behavior()->callBehavior(My::id() . 'AddPostType', $more);
+
+        foreach ($more as $type) {
+            if (is_string($type) && !in_array($type, $types, true) && App::postTypes()->exists($type)) {
+                $types[] = $type;
+            }
         }
 
         return $types;
@@ -358,7 +377,8 @@ abstract class PostTool extends McpTool
     {
         $post = $this->describe($this->fetch($id));
 
-        if (App::config()->adminUrl() !== '') {
+        // Admin URLs of other entries types are only known by their plugin
+        if (App::config()->adminUrl() !== '' && in_array($post['type'], ['post', 'page'], true)) {
             // Admin URLs of entries types are only known in backend
             $post['edit_url'] = App::config()->adminUrl() . (str_ends_with(App::config()->adminUrl(), '/') ? '' : '/') .
                 'index.php?process=' . ($post['type'] === 'page' ? 'Plugin&p=pages&act=page' : 'Post') . '&id=' . $id;

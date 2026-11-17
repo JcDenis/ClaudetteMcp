@@ -87,6 +87,8 @@ Avec une clé en lecture et écriture, en plus :
 * `set_comment_status` : modérer un commentaire.
 
 Les pages ne sont accessibles que si le plugin Pages est actif et que vous avez sa permission.
+Les outils des billets ne voient que les billets et les pages : les billets d'autres types, comme ceux d'un dépôt de
+modules, restent gérés par leur plugin, sauf si ce plugin les ouvre lui-même aux outils.
 D'autres plugins peuvent ajouter leurs propres outils.
 
 Voici un billet créé par l'assistant, puis publié sur demande :

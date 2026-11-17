@@ -1,3 +1,8 @@
+ClaudetteMcp 0.4 - 2026.11.17
+===========================================================
+* [new] Let a plugin add its entries type to entries tools (behavior ClaudetteMcpAddPostType)
+* [docs] Entries tools only see posts and pages
+
 ClaudetteMcp 0.3.1 - 2026.11.14
 ===========================================================
 * [docs] Add a user guide in French, with screenshots

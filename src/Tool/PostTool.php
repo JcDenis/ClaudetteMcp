@@ -122,16 +122,43 @@ abstract class PostTool extends McpTool
     /**
      * Get entries statuses the tools know.
      *
+     * The core statuses, and the statuses a plugin adds with the behavior ClaudetteMcpAddPostStatus
+     * (an ArrayObject of name => status code, ex: Proofreading). A name is lower case letters and "_",
+     * a status must be known by Dotclear. A plugin status never replaces a core one.
+     *
      * @return  array<string, int>
      */
     protected function statuses(): array
     {
-        return [
+        $statuses = [
             'published'   => App::status()->post()::PUBLISHED,
             'unpublished' => App::status()->post()::UNPUBLISHED,
             'scheduled'   => App::status()->post()::SCHEDULED,
             'pending'     => App::status()->post()::PENDING,
         ];
+
+        /**
+         * @var     ArrayObject<array-key, mixed>   $more
+         */
+        $more = new ArrayObject();
+
+        # --BEHAVIOR-- ClaudetteMcpAddPostStatus -- ArrayObject
+        App::behavior()->callBehavior(My::id() . 'AddPostStatus', $more);
+
+        foreach ($more as $name => $status) {
+            if (is_string($name)
+                && preg_match('/^[a-z_]+$/', $name)
+                && $name !== 'all'
+                && is_int($status)
+                && !isset($statuses[$name])
+                && !in_array($status, $statuses, true)
+                && App::status()->post()->has($status)
+            ) {
+                $statuses[$name] = $status;
+            }
+        }
+
+        return $statuses;
     }
 
     /**

@@ -220,6 +220,13 @@ ne doit jamais être publié par `set_post_status`, cela contournerait son proce
 veut exposer son type aux outils l'ajoute avec le behavior `ClaudetteMcpAddPostType` (un `ArrayObject` de types),
 après avoir vérifié lui-même les permissions de l'utilisateur ; un type inconnu de Dotclear est ignoré.
 
+Les outils des billets ne connaissent que les quatre statuts du cœur (publié, non publié, programmé, en attente).
+Un plugin qui ajoute ses propres statuts (ex : Proofreading et ses étapes de relecture) les ouvre aux outils avec le
+behavior `ClaudetteMcpAddPostStatus` (un `ArrayObject` nom => code de statut). Pas de lecture automatique de tous les
+statuts déclarés dans Dotclear : un statut peut avoir des règles propres à son plugin, c'est à lui de décider.
+Un nom est en minuscules et `_`, un statut inconnu de Dotclear est ignoré, un statut du plugin ne remplace jamais un statut du cœur.
+Changer le statut demande la permission publish, comme pour les statuts du cœur.
+
 Règle retenue : un plugin porte lui-même sa liaison avec ClaudetteMcp, dans son propre code, où il utilise
 ses propres classes et la fait évoluer avec lui (exemple : le plugin periodical et ses outils `list_periods`
 et `set_post_period`). `src/ThirdParty` est réservé aux plugins d'autres auteurs qui ne le feront pas,

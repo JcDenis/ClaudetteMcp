@@ -95,6 +95,11 @@ The tools `attach_media`, `detach_media` and `get_post` then know this link type
 A tool working on entries can extend `Dotclear\Plugin\ClaudetteMcp\Tool\PostTool` to use the same rules as other tools:
 `fetch()` gets an entry the user can see, `editable()` tells if he can update it.
 
+Entries tools only see posts and pages. A plugin can open its own entries type to them with the behavior
+`ClaudetteMcpAddPostType` (append the type to the given `ArrayObject`, after checking the permissions of the user),
+and add its own entries statuses with the behavior `ClaudetteMcpAddPostStatus`
+(set `name => status code` in the given `ArrayObject`, the status being known by Dotclear).
+
 A plugin should provide its own tools, in its own code: see the plugin periodical for an example.
 ClaudetteMcp tools only use Dotclear core and its distributed plugins. The directory `src/ThirdParty`
 holds the support of plugins of other authors, written with these behaviors only, as if these plugins provided it:

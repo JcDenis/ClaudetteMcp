@@ -7,7 +7,6 @@ namespace Dotclear\Plugin\ClaudetteMcp\Tool;
 use Dotclear\App;
 use Dotclear\Database\MetaRecord;
 use Dotclear\Database\Statement\SelectStatement;
-use Dotclear\Plugin\ClaudetteMcp\McpTool;
 use Dotclear\Plugin\ClaudetteMcp\McpToolException;
 use Exception;
 
@@ -17,11 +16,13 @@ use Exception;
  *
  * One call changes every entry of the tag: reserved to content administrators,
  * as the core only renames the tag on the user own entries otherwise.
+ * Only entries types open to tools are changed (posts, pages, types added by ClaudetteMcpAddPostType):
+ * the core, like the admin page of the plugin tags, would rename the tag on entries of every type.
  *
  * @author      Jean-Christian Paul Denis
  * @copyright   AGPL-3.0
  */
-class RenameTag extends McpTool
+class RenameTag extends PostTool
 {
     public function name(): string
     {
@@ -35,7 +36,7 @@ class RenameTag extends McpTool
 
     public function description(): string
     {
-        return 'Rename a tag on all entries of the blog. If the new tag already exists, both tags are merged. ' .
+        return 'Rename a tag on all entries of the blog (' . implode(', ', $this->types()) . '). If the new tag already exists, both tags are merged. ' .
             'This changes many entries at once and can not be undone simply: use it only on explicit request of the user.';
     }
 
@@ -83,7 +84,12 @@ class RenameTag extends McpTool
         $merged = $new !== $tag && $this->count($new) > 0;
 
         try {
-            if (!App::meta()->updateMeta($tag, $new, 'tag')) {
+            $found = false;
+            foreach ($this->types() as $type) {
+                // Not "||": the tag must be renamed for every type
+                $found = App::meta()->updateMeta($tag, $new, 'tag', $type) || $found;
+            }
+            if (!$found) {
                 throw new McpToolException('Unknown tag, see list_tags');
             }
         } catch (McpToolException $e) {
@@ -101,7 +107,7 @@ class RenameTag extends McpTool
     }
 
     /**
-     * Count entries of the blog with a tag, whatever their status.
+     * Count entries of the blog with a tag, whatever their status, in entries types open to tools.
      *
      * In frontend context, App::meta()->getMetadata() only counts published entries.
      */
@@ -118,6 +124,7 @@ class RenameTag extends McpTool
             ->and('P.blog_id = ' . $sql->quote(App::blog()->id()))
             ->and('M.meta_type = ' . $sql->quote('tag'))
             ->and('M.meta_id = ' . $sql->quote($tag))
+            ->and('P.post_type' . $sql->in($this->types()))
             ->select();
 
         return $rs instanceof MetaRecord && is_numeric($n = $rs->f(0)) ? (int) $n : 0;

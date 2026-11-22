@@ -75,18 +75,27 @@ Avec une clé en lecture seule :
 * `list_posts` et `get_post` : lister et lire les billets ;
 * `list_categories` et `list_tags` : les catégories et les mots-clés ;
 * `list_media` : la médiathèque ;
-* `list_comments` : les commentaires.
+* `list_comments` : les commentaires ;
+* `list_links` : les liens du blogroll (plugin Blogroll et sa permission) ;
+* `get_compatibility_audit` : le dernier audit de compatibilité de DotclearWatch, pour préparer une mise à jour de Dotclear
+  (super administrateur ; l'audit se lance depuis la page de DotclearWatch).
 
 Avec une clé en lecture et écriture, en plus :
 
 * `create_post` : créer un billet. Il n'est jamais publié, il reste non publié ;
 * `update_post` : modifier un billet ;
 * `set_post_status` : publier ou dépublier, si vous avez la permission de publier ;
-* `create_category` : créer une catégorie ;
+* `create_category` et `update_category` : créer une catégorie, la renommer, changer sa description ou la déplacer
+  (son adresse ne change pas) ;
+* `rename_tag` : renommer un mot-clé sur tous les billets, ou le fusionner avec un autre (administrateur de contenu) ;
+* `set_link` : ajouter ou modifier un lien du blogroll, ou le mettre hors ligne ;
 * `upload_media`, `attach_media` et `detach_media` : téléverser un média et le lier à un billet ;
+* `update_media` : changer le titre, le texte alternatif, la description d'un média ou le rendre privé ;
 * `set_comment_status` : modérer un commentaire.
 
 Les pages ne sont accessibles que si le plugin Pages est actif et que vous avez sa permission.
+De même, un outil qui dépend d'un plugin (Tags, Blogroll, DotclearWatch) n'est proposé que si ce plugin est installé
+et activé, même s'il est livré avec Dotclear.
 Les outils des billets ne voient que les billets et les pages : les billets d'autres types, comme ceux d'un dépôt de
 modules, restent gérés par leur plugin, sauf si ce plugin les ouvre lui-même aux outils.
 D'autres plugins peuvent ajouter leurs propres outils.

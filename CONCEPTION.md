@@ -273,6 +273,42 @@ Règles :
 * Pas de réponse à un commentaire au nom de l'utilisateur, pas de suppression.
 * Les notes d'un billet ne sont lues que par ceux qui peuvent le modifier.
 
+Outils ajoutés après la 0.4 (branche `core-tools`), à partir du cœur et des modules de la distribution :
+
+| Outil | Type | Permission Dotclear |
+|---|---|---|
+| `update_media` | écriture | media pour ses fichiers, media_admin pour tous |
+| `update_category` | écriture | categories |
+| `list_links` | lecture | blogroll, admin ou contentadmin (plugin blogroll) |
+| `set_link` | écriture | blogroll, admin ou contentadmin (plugin blogroll) |
+| `rename_tag` | écriture | contentadmin (plugin tags) |
+| `get_compatibility_audit` | lecture | super administrateur (plugin DotclearWatch 1.8+) |
+
+Règles :
+
+* Un plugin de la distribution peut être désactivé ou supprimé : un outil qui en dépend vérifie
+  `App::plugins()->moduleExists()` (modules actifs seulement) dans `available()`, avant toute utilisation de ses classes.
+  Testé plugin actif, désactivé (fichier `_disabled`) et supprimé.
+* `update_media` ne change que le titre, le texte alternatif, la description et le caractère privé, comme la page
+  d'un média dans l'admin ; le fichier n'est jamais déplacé, renommé ni remplacé. La date n'est pas proposée
+  (heure du serveur dans le cœur, source de confusion). `list_media` donne aussi le texte alternatif, la description et le caractère privé.
+* `update_category` garde toujours l'adresse de la catégorie : le cœur la recalcule depuis le titre si elle est vide,
+  ce qui casserait les liens. Pas de suppression ni de réordonnancement entre catégories sœurs.
+  `list_categories` donne aussi la description.
+* Blogroll : pas de suppression, un lien ou une catégorie se met hors ligne. `set_link` n'accepte que des adresses
+  http ou https. Une catégorie du blogroll est une ligne sans titre ni adresse, et un lien appartient à la dernière
+  catégorie qui le précède : l'argument `after_id` place l'élément et renumérote les positions.
+* `rename_tag` modifie beaucoup de billets d'un coup : réservé aux administrateurs de contenu (le cœur ne renommerait
+  sinon que sur les billets de l'utilisateur), et à utiliser sur demande explicite. Si le nouveau mot-clé existe,
+  les deux sont fusionnés. Le nombre de billets est compté tous statuts confondus (en contexte public, le cœur ne compte que les publiés).
+* `get_compatibility_audit` lit seulement le dernier résultat de l'audit de DotclearWatch (intégré à la distribution en 2.41) :
+  l'audit, qui peut être long, se lance depuis la page de DotclearWatch. Il porte sur toute l'installation (modules),
+  d'où la restriction au super administrateur, comme la page de DotclearWatch. Exception assumée à la règle
+  « pas de plugins » : lecture seule, utile pour déboguer ou préparer une migration. Sans module : un résumé par module ;
+  avec un module : ses constats (200 au plus).
+* Écartés : antispam (mots interdits = réglage du filtre pour tout le blog), simpleMenu et widgets (réglages du blog),
+  pings, maintenance, importExport, Uninstaller, aboutConfig, userPref, themeEditor et les thèmes.
+
 Ensuite : choix des familles d'outils (billets, pages, médias, commentaires) à la création de la clé.
 
 ## Points à vérifier

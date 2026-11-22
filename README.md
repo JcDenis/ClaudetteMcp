@@ -54,16 +54,23 @@ The assistant acts with the permissions of the user who created the key, never m
 | `list_tags` | List tags (plugin tags) |
 | `list_media` | List a directory of the media library (media permission) |
 | `list_comments` | List comments and trackbacks, by status or entry |
+| `list_links` | List links and link categories of the blogroll (plugin blogroll and its permission) |
+| `get_compatibility_audit` | Read the last compatibility audit of DotclearWatch (plugin DotclearWatch, super admin) |
 | `create_post` | Create a post or a page, never published (HTML or wiki) |
 | `update_post` | Update a post or a page, without changing its status |
 | `set_post_status` | Publish, schedule, unpublish a post or a page (publish permission) |
 | `create_category` | Create a category (categories permission) |
+| `update_category` | Rename, describe or move a category, keeping its URL (categories permission) |
+| `rename_tag` | Rename a tag on all entries, or merge it into another one (plugin tags, content administrator) |
+| `set_link` | Add or update a blogroll link or category, put it offline (plugin blogroll and its permission) |
 | `upload_media` | Add a file to the media library, never replacing one (media permission) |
+| `update_media` | Change the title, alternate text, description or privacy of a media (owner or media administrator) |
 | `attach_media` | Link a media to an entry, as attachment (or as featured media with the plugin featuredMedia) |
 | `detach_media` | Remove the link between a media and an entry |
 | `set_comment_status` | Publish, unpublish or mark as junk a comment (publish permission) |
 
-Pages need the plugin pages and its permission.
+Pages need the plugin pages and its permission. A tool relying on a plugin (tags, blogroll, DotclearWatch) is offered
+only if this plugin is installed and enabled, even for plugins distributed with Dotclear.
 A key never gives more than the Dotclear permissions of its user: with an administrator account, the assistant can do
 on contents what an administrator does. Prefer a key created with a dedicated user having only the permissions you need.
 Comments are listed like in the blog administration (all of them for a content administrator, those of his entries for another user),

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\ClaudetteMcp\Tool;
 
 use Dotclear\App;
-use Dotclear\Plugin\ClaudetteMcp\McpTool;
 use Dotclear\Plugin\ClaudetteMcp\McpToolException;
 use Exception;
 
@@ -16,7 +15,7 @@ use Exception;
  * @author      Jean-Christian Paul Denis
  * @copyright   AGPL-3.0
  */
-class ListMedia extends McpTool
+class ListMedia extends MediaTool
 {
     public function name(): string
     {
@@ -83,17 +82,7 @@ class ListMedia extends McpTool
         $files = [];
         $all = App::media()->getFiles();
         foreach (array_slice($all, ($page - 1) * $limit, $limit) as $item) {
-            $vars    = get_object_vars($item);
-            $files[] = [
-                'id'    => isset($vars['media_id'])    && is_int($vars['media_id']) ? $vars['media_id'] : 0,
-                'name'  => $item->basename,
-                'path'  => $item->relname,
-                'title' => isset($vars['media_title']) && is_string($vars['media_title']) ? $vars['media_title'] : '',
-                'type'  => (string) $item->type,
-                'size'  => $item->size,
-                'date'  => isset($vars['media_dtstr']) && is_string($vars['media_dtstr']) ? $vars['media_dtstr'] : '',
-                'url'   => $item->file_url,
-            ];
+            $files[] = $this->describeFile($item);
         }
 
         return [

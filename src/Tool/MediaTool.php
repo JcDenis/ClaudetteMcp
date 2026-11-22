@@ -6,8 +6,10 @@ namespace Dotclear\Plugin\ClaudetteMcp\Tool;
 
 use Dotclear\App;
 use Dotclear\Helper\File\MediaFile;
+use Dotclear\Helper\Html\Html;
 use Dotclear\Plugin\ClaudetteMcp\McpToolException;
 use Exception;
+use SimpleXMLElement;
 
 /**
  * @brief       ClaudetteMcp media tools helper.
@@ -69,7 +71,26 @@ abstract class MediaTool extends PostTool
             'size'  => $file->size,
             'date'  => isset($vars['media_dtstr']) && is_string($vars['media_dtstr']) ? $vars['media_dtstr'] : '',
             'url'   => $file->file_url,
+            'alt'         => $this->metaValue($file, 'AltText'),
+            'description' => $this->metaValue($file, 'Description'),
+            'private'     => (bool) ($vars['media_priv'] ?? false),
         ];
+    }
+
+    /**
+     * Get a value of the media metadata (AltText, Description, ...).
+     */
+    protected function metaValue(MediaFile $file, string $name): string
+    {
+        if ($file->media_meta instanceof SimpleXMLElement) {
+            foreach ($file->media_meta as $k => $v) {
+                if ($k === $name) {
+                    return Html::decodeEntities($v->__toString());
+                }
+            }
+        }
+
+        return '';
     }
 
     /**

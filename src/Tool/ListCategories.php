@@ -41,6 +41,7 @@ class ListCategories extends McpTool
                 'id'       => $rs->intField('cat_id'),
                 'title'    => $rs->strField('cat_title'),
                 'level'    => $rs->intField('level'),
+                'description' => $rs->strField('cat_desc'),
                 'nb_posts' => $rs->intField('nb_post'),
                 'url'      => App::blog()->url() . App::url()->getURLFor('category', $rs->strField('cat_url')),
             ];

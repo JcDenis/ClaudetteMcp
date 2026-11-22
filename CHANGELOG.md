@@ -1,3 +1,15 @@
+ClaudetteMcp 0.5 - 2026.11.23
+===========================================================
+* [new] Add tool update_media (title, alternate text, description, privacy), list_media gives them too
+* [new] Add tool update_category (title, description, parent, URL kept), list_categories gives description
+* [new] Add tools list_links and set_link for the plugin blogroll
+* [new] Add tool rename_tag (rename or merge a tag, content administrator), only on entries types open to tools
+* [new] Add tool get_compatibility_audit to read the DotclearWatch audit (super admin), summary of modules with findings
+* [new] Let a plugin add its entries statuses to entries tools (behavior ClaudetteMcpAddPostStatus)
+* [new] Tools families: a key gives only some families of tools
+* [lang] French names of the families of tools
+* [docs] Document tools from Dotclear core and distributed plugins, and tools families
+
 ClaudetteMcp 0.4 - 2026.11.17
 ===========================================================
 * [new] Let a plugin add its entries type to entries tools (behavior ClaudetteMcpAddPostType)

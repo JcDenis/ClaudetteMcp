@@ -56,3 +56,6 @@ L10n::$locales['Blogroll and what plugins add around entries (aliases, short lin
 L10n::$locales['Read activity, ratings, polls results, content problems.'] = 'Lire l\'activité, les notes, les résultats des sondages, les problèmes de contenu.';
 L10n::$locales['Compatibility audit and service tools of plugins.'] = 'Audit de compatibilité et outils de service des plugins.';
 L10n::$locales['Tools of plugins which do not tell their family.'] = 'Outils des plugins qui n\'indiquent pas leur famille.';
+L10n::$locales['Media'] = 'Médias';
+L10n::$locales['Administration'] = 'Administration';
+L10n::$locales['Tools'] = 'Outils';

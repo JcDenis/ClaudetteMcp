@@ -158,3 +158,12 @@ msgstr "Audit de compatibilité et outils de service des plugins."
 
 msgid "Tools of plugins which do not tell their family."
 msgstr "Outils des plugins qui n'indiquent pas leur famille."
+
+msgid "Media"
+msgstr "Médias"
+
+msgid "Administration"
+msgstr "Administration"
+
+msgid "Tools"
+msgstr "Outils"

@@ -301,10 +301,14 @@ Règles :
 * `rename_tag` modifie beaucoup de billets d'un coup : réservé aux administrateurs de contenu (le cœur ne renommerait
   sinon que sur les billets de l'utilisateur), et à utiliser sur demande explicite. Si le nouveau mot-clé existe,
   les deux sont fusionnés. Le nombre de billets est compté tous statuts confondus (en contexte public, le cœur ne compte que les publiés).
+  Seuls les types ouverts aux outils sont modifiés (billets, pages, types ajoutés par `ClaudetteMcpAddPostType`) : appelé
+  sans type, le cœur renomme aussi sur les billets des autres plugins (vu sur le blog de dev : 66 entrées pour un seul billet,
+  à cause des modules de daRepo). L'admin du plugin tags le fait, l'outil est plus strict.
 * `get_compatibility_audit` lit seulement le dernier résultat de l'audit de DotclearWatch (intégré à la distribution en 2.41) :
   l'audit, qui peut être long, se lance depuis la page de DotclearWatch. Il porte sur toute l'installation (modules),
   d'où la restriction au super administrateur, comme la page de DotclearWatch. Exception assumée à la règle
-  « pas de plugins » : lecture seule, utile pour déboguer ou préparer une migration. Sans module : un résumé par module ;
+  « pas de plugins » : lecture seule, utile pour déboguer ou préparer une migration. Sans module : les modules qui ont
+  des constats et le nombre de modules sans constat (argument `all` pour tous, 92 modules sur le blog de dev) ;
   avec un module : ses constats (200 au plus).
 * Écartés : antispam (mots interdits = réglage du filtre pour tout le blog), simpleMenu et widgets (réglages du blog),
   pings, maintenance, importExport, Uninstaller, aboutConfig, userPref, themeEditor et les thèmes.

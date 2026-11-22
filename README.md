@@ -55,13 +55,13 @@ The assistant acts with the permissions of the user who created the key, never m
 | `list_media` | List a directory of the media library (media permission) |
 | `list_comments` | List comments and trackbacks, by status or entry |
 | `list_links` | List links and link categories of the blogroll (plugin blogroll and its permission) |
-| `get_compatibility_audit` | Read the last compatibility audit of DotclearWatch (plugin DotclearWatch, super admin) |
+| `get_compatibility_audit` | Read the last compatibility audit of DotclearWatch: modules with findings, or the findings of a module (plugin DotclearWatch, super admin) |
 | `create_post` | Create a post or a page, never published (HTML or wiki) |
 | `update_post` | Update a post or a page, without changing its status |
 | `set_post_status` | Publish, schedule, unpublish a post or a page (publish permission) |
 | `create_category` | Create a category (categories permission) |
 | `update_category` | Rename, describe or move a category, keeping its URL (categories permission) |
-| `rename_tag` | Rename a tag on all entries, or merge it into another one (plugin tags, content administrator) |
+| `rename_tag` | Rename a tag on all posts (and entries types open to tools), or merge it into another one (plugin tags, content administrator) |
 | `set_link` | Add or update a blogroll link or category, put it offline (plugin blogroll and its permission) |
 | `upload_media` | Add a file to the media library, never replacing one (media permission) |
 | `update_media` | Change the title, alternate text, description or privacy of a media (owner or media administrator) |

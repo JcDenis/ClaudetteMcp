@@ -68,6 +68,8 @@ Required Dotclear and PHP versions: see `_define.php`.
 * Its own tools only use the Dotclear core and its distributed plugins. The author's plugins carry their own tools; plugins of other authors who will not do it go in `src/ThirdParty/`, written with ClaudetteMcp behaviors only, without calling their classes.
 * Distributed plugins can be disabled or removed: a tool relying on one checks `App::plugins()->moduleExists()`
   in `available()` before touching its classes. Test with the plugin enabled, disabled (`_disabled` file) and removed.
+* Each tool belongs to a family (`McpTool::family()`, list in `McpTools::families()`), a key gives some families
+  (`credential_data.families`, null = all for keys created before 0.5). Plugins return the family as a string.
 * Each tool must be validated by the user when the connector is (re)connected: keep the number of tools small.
 * CI installs ApiServer from the author's repositories, then from franck-paul's.
 

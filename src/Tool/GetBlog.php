@@ -26,6 +26,11 @@ class GetBlog extends McpTool
         return 'Get blog information';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_BASE;
+    }
+
     public function description(): string
     {
         return 'Get information about the blog (name, URL, language, timezone) and about what the user is allowed to do on it. ' .

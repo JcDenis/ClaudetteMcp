@@ -26,6 +26,11 @@ class SetCommentStatus extends CommentTool
         return 'Moderate a blog comment';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_COMMENTS;
+    }
+
     public function description(): string
     {
         return 'Change the status of a comment or trackback of the blog. "published" makes it visible to everyone on the blog at once. ' .

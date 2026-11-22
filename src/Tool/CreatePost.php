@@ -26,6 +26,11 @@ class CreatePost extends PostTool
         return 'Create a blog entry';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_POSTS;
+    }
+
     public function description(): string
     {
         return 'Create a new entry on the blog. The entry is never published by this tool: ' .

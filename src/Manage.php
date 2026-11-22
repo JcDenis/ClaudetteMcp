@@ -8,10 +8,12 @@ use Dotclear\App;
 use Dotclear\Helper\Date;
 use Dotclear\Helper\Html\Form\Checkbox;
 use Dotclear\Helper\Html\Form\Div;
+use Dotclear\Helper\Html\Form\Fieldset;
 use Dotclear\Helper\Html\Form\Form;
 use Dotclear\Helper\Html\Form\Hidden;
 use Dotclear\Helper\Html\Form\Input;
 use Dotclear\Helper\Html\Form\Label;
+use Dotclear\Helper\Html\Form\Legend;
 use Dotclear\Helper\Html\Form\Note;
 use Dotclear\Helper\Html\Form\Option;
 use Dotclear\Helper\Html\Form\Para;
@@ -86,11 +88,23 @@ class Manage
                     $lifetime = 0;
                 }
 
+                // Checked families, the base family is always given
+                $families = [];
+                foreach (array_keys(McpTools::families()) as $family) {
+                    if ($family !== McpTool::FAMILY_BASE && isset($_POST['key_families']) && is_array($_POST['key_families']) && in_array($family, $_POST['key_families'], true)) {
+                        $families[] = $family;
+                    }
+                }
+                if ($families === []) {
+                    throw new Exception(__('You must choose at least one family of tools.'));
+                }
+
                 self::$new_key = McpKeys::create(
                     mb_substr($label, 0, 64),
                     isset($_POST['key_readonly']),
                     $lifetime === 0 ? 0 : time() + $lifetime * 86400,
-                    isset($_POST['key_header'])
+                    isset($_POST['key_header']),
+                    $families
                 );
                 self::$new_key_header = isset($_POST['key_header']);
             }
@@ -230,6 +244,8 @@ class Manage
                         ->class('nowrap')
                         ->text($key->readonly ? __('Read only') : __('Read and write')),
                     (new Td())
+                        ->text(Html::escapeHTML(self::familiesText($key))),
+                    (new Td())
                         ->class('nowrap')
                         ->text($key->header ? __('Header only') : __('Header or address')),
                     (new Td())
@@ -262,6 +278,7 @@ class Manage
                         ->cols([
                             (new Th())->text(__('Label'))->scope('col')->class('nowrap'),
                             (new Th())->text(__('Access'))->scope('col')->class('nowrap'),
+                            (new Th())->text(__('Tools'))->scope('col')->class('nowrap'),
                             (new Th())->text(__('Key sent by'))->scope('col')->class('nowrap'),
                             (new Th())->text(__('Created'))->scope('col')->class('nowrap'),
                             (new Th())->text(__('Expires'))->scope('col')->class('nowrap'),
@@ -299,6 +316,9 @@ class Manage
                             ->value('1')
                             ->label((new Label(__('Read only'), Label::IL_FT))),
                     ]),
+                (new Fieldset())
+                    ->legend(new Legend(__('Tools given to the assistant')))
+                    ->fields(self::familiesFields()),
                 (new Para())
                     ->items([
                         (new Checkbox('key_header', true))
@@ -322,5 +342,61 @@ class Manage
                         ... My::hiddenFields(),
                     ]),
             ]);
+    }
+
+    /**
+     * Get the checkboxes of tools families, all checked by default.
+     *
+     * @return  array<int, Para|Note>
+     */
+    private static function familiesFields(): array
+    {
+        $descriptions = [
+            McpTool::FAMILY_POSTS          => __('Read, write and publish posts and pages, with what plugins add to them (periods, expired dates, events...).'),
+            McpTool::FAMILY_CLASSIFICATION => __('Create and change categories, rename tags: one change can concern many entries.'),
+            McpTool::FAMILY_MEDIA          => __('Read and add media, describe them, link them to entries.'),
+            McpTool::FAMILY_COMMENTS       => __('Read and moderate comments, written by visitors.'),
+            McpTool::FAMILY_EXTRAS         => __('Blogroll and what plugins add around entries (aliases, short links, feeds, todo lists...).'),
+            McpTool::FAMILY_STATS          => __('Read activity, ratings, polls results, content problems.'),
+            McpTool::FAMILY_ADMIN          => __('Compatibility audit and service tools of plugins.'),
+            McpTool::FAMILY_OTHER          => __('Tools of plugins which do not tell their family.'),
+        ];
+
+        $fields = [];
+        foreach (McpTools::families() as $family => $name) {
+            if ($family === McpTool::FAMILY_BASE) {
+                continue;
+            }
+            $fields[] = (new Para())
+                ->items([
+                    (new Checkbox(['key_families[]', 'key_family_' . $family], true))
+                        ->value($family)
+                        ->label((new Label(__($name), Label::IL_FT))),
+                ]);
+            $fields[] = (new Note())
+                ->class('form-note')
+                ->text($descriptions[$family] ?? '');
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Get the tools families of a key as text.
+     */
+    private static function familiesText(McpKey $key): string
+    {
+        if ($key->families === null) {
+            return __('All tools');
+        }
+
+        $names = [];
+        foreach (McpTools::families() as $family => $name) {
+            if ($family !== McpTool::FAMILY_BASE && $key->hasFamily($family)) {
+                $names[] = __($name);
+            }
+        }
+
+        return count($names) === count(McpTools::families()) - 1 ? __('All tools') : implode(', ', $names);
     }
 }

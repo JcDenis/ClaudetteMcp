@@ -30,6 +30,11 @@ class UpdateCategory extends McpTool
         return 'Update a blog category';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_CLASSIFICATION;
+    }
+
     public function description(): string
     {
         return 'Rename a category, change its description or move it under another category. ' .

@@ -29,6 +29,11 @@ class SetLink extends BlogrollTool
         return 'Add or update a blogroll link';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_EXTRAS;
+    }
+
     public function description(): string
     {
         return 'Add a link or a link category to the blog blogroll, or update one (with its ID from list_links). ' .

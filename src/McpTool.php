@@ -22,6 +22,20 @@ use Dotclear\App;
 abstract class McpTool
 {
     /**
+     * Tools families: a key can be limited to some families.
+     * Plugins use the string values, not the constants, to keep working with older ClaudetteMcp versions.
+     */
+    public const FAMILY_BASE           = 'base';
+    public const FAMILY_POSTS          = 'posts';
+    public const FAMILY_CLASSIFICATION = 'classification';
+    public const FAMILY_MEDIA          = 'media';
+    public const FAMILY_COMMENTS       = 'comments';
+    public const FAMILY_EXTRAS         = 'extras';
+    public const FAMILY_STATS          = 'stats';
+    public const FAMILY_ADMIN          = 'admin';
+    public const FAMILY_OTHER          = 'other';
+
+    /**
      * Get tool name (ex: list_posts).
      */
     abstract public function name(): string;
@@ -54,6 +68,14 @@ abstract class McpTool
     public function required(): array
     {
         return [];
+    }
+
+    /**
+     * Get tool family, one of McpTools::families(): an unknown family counts as "other".
+     */
+    public function family(): string
+    {
+        return self::FAMILY_OTHER;
     }
 
     /**

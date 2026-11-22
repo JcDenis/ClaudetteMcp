@@ -27,6 +27,11 @@ class ListMedia extends MediaTool
         return 'List media library';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_MEDIA;
+    }
+
     public function description(): string
     {
         return 'List sub-directories and files of a directory of the blog media library, files by page. ' .

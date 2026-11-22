@@ -28,6 +28,11 @@ class UploadMedia extends MediaTool
         return 'Upload a file to the media library';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_MEDIA;
+    }
+
     public function description(): string
     {
         return 'Add a new file to the blog media library. The content of the file is given base64 encoded. ' .

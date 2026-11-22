@@ -25,6 +25,11 @@ class ListPosts extends PostTool
         return 'List blog entries';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_POSTS;
+    }
+
     public function description(): string
     {
         return 'List entries of the blog, without their content: posts, most recent first, or pages, by position, if the blog has pages. ' .

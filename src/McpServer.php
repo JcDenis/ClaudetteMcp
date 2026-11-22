@@ -49,10 +49,12 @@ class McpServer
     /**
      * @param   null|McpTools   $tools      The tools, null for an anonymous call (no valid access key)
      * @param   bool            $readonly   Limit to read only tools
+     * @param   null|McpKey     $key        The access key, for its tools families
      */
     public function __construct(
         private readonly ?McpTools $tools,
         private readonly bool $readonly = true,
+        private readonly ?McpKey $key = null,
     ) {
     }
 
@@ -284,7 +286,9 @@ class McpServer
 
     private function isAllowed(McpTool $tool): bool
     {
-        return $tool->available() && ($tool->readOnly() || !$this->readonly);
+        return $tool->available()
+            && ($tool->readOnly() || !$this->readonly)
+            && (!$this->key instanceof McpKey || $this->key->hasFamily(McpTools::familyOf($tool)));
     }
 
     private function succeed(int|string $id, mixed $result): void

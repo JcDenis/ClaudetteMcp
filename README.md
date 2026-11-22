@@ -40,6 +40,9 @@ as the server can not be checked before the request header is given.
 The key is shown once and must be kept secret.
 For an assistant which can not send request headers, a key can also be accepted in the connector address
 (uncheck "Accept the key only from the request header"), but it can then end in the web server logs.
+A key can be limited to some families of tools (posts and pages, categories and tags, media, comments, blog extras,
+monitoring and statistics, administration, others): the assistant does not even see the other tools.
+Keys created before ClaudetteMcp 0.5 give all the tools.
 A key belongs to one user and one blog, it can be revoked at any time from the same page.
 The assistant acts with the permissions of the user who created the key, never more.
 
@@ -83,6 +86,9 @@ Writing tools are not available with a read only key, and need the same permissi
 
 Other plugins can add tools with the behavior `ClaudetteMcpAddTool`:
 append to the given `ArrayObject` an instance of a class extending `Dotclear\Plugin\ClaudetteMcp\McpTool`.
+
+A tool tells its family with the method `family()`, as a string (not the constants of `McpTool`, missing in older versions):
+`posts`, `classification`, `media`, `comments`, `extras`, `stats`, `admin`. A tool without family, or with an unknown one, is in `other`.
 
 Tools run in frontend context, where Dotclear does not limit contents to user permissions:
 each tool must check permissions by itself.

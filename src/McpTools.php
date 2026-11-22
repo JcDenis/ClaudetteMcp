@@ -60,6 +60,36 @@ class McpTools
         }
     }
 
+    /**
+     * Get tools families, by ID, with their English name (translated in backend).
+     *
+     * The base family is always given to the assistant.
+     *
+     * @return  array<string, string>
+     */
+    public static function families(): array
+    {
+        return [
+            McpTool::FAMILY_BASE           => 'Base',
+            McpTool::FAMILY_POSTS          => 'Posts and pages',
+            McpTool::FAMILY_CLASSIFICATION => 'Categories and tags',
+            McpTool::FAMILY_MEDIA          => 'Media',
+            McpTool::FAMILY_COMMENTS       => 'Comments',
+            McpTool::FAMILY_EXTRAS         => 'Blog extras',
+            McpTool::FAMILY_STATS          => 'Monitoring and statistics',
+            McpTool::FAMILY_ADMIN          => 'Administration',
+            McpTool::FAMILY_OTHER          => 'Others',
+        ];
+    }
+
+    /**
+     * Get the family of a tool, "other" for an unknown family.
+     */
+    public static function familyOf(McpTool $tool): string
+    {
+        return isset(self::families()[$tool->family()]) ? $tool->family() : McpTool::FAMILY_OTHER;
+    }
+
     public function get(string $name): ?McpTool
     {
         return $this->stack[$name] ?? null;

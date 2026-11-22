@@ -23,6 +23,11 @@ class GetPost extends PostTool
         return 'Read a blog entry';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_POSTS;
+    }
+
     public function description(): string
     {
         return 'Get an entry of the blog with its excerpt and content, in the source format of the entry ' .

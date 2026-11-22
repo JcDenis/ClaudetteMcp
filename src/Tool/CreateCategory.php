@@ -27,6 +27,11 @@ class CreateCategory extends McpTool
         return 'Create a blog category';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_CLASSIFICATION;
+    }
+
     public function description(): string
     {
         return 'Create a new category on the blog. It is visible on the blog as soon as a published post uses it. ' .

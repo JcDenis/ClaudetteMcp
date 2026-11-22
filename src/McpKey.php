@@ -21,6 +21,7 @@ class McpKey
      * @param   int     $expire     The expiration timestamp, 0 for never
      * @param   bool    $header     The key is accepted only from the request header
      * @param   string  $date       The creation date
+     * @param   null|array<int, string>     $families   The tools families, null for all
      */
     public function __construct(
         public readonly string $hash,
@@ -30,7 +31,16 @@ class McpKey
         public readonly int $expire,
         public readonly bool $header,
         public readonly string $date,
+        public readonly ?array $families = null,
     ) {
+    }
+
+    /**
+     * Check if the key gives a family of tools. A key without families (before 0.5) gives all of them.
+     */
+    public function hasFamily(string $family): bool
+    {
+        return $family === McpTool::FAMILY_BASE || $this->families === null || in_array($family, $this->families, true);
     }
 
     public function isExpired(): bool

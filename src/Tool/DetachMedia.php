@@ -26,6 +26,11 @@ class DetachMedia extends MediaTool
         return 'Unlink a media from a blog entry';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_MEDIA;
+    }
+
     public function description(): string
     {
         return 'Remove the link between a file of the media library and an entry of the blog. ' .

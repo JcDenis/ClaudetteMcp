@@ -43,6 +43,9 @@ Remplissez le formulaire « Créer une clé » :
 
 * **Libellé** : un nom pour reconnaître la clé, par exemple le nom de l'assistant ;
 * **Lecture seule** : l'assistant peut lire le blog, mais rien y écrire ;
+* **Outils donnés à l'assistant** : les familles d'outils que la clé donne, toutes cochées au départ
+  (billets et pages, catégories et mots-clés, médias, commentaires, annexes du blog, suivi et statistiques, administration, autres).
+  Décochez celles dont l'assistant n'a pas besoin : il ne les verra même pas. Les informations du blog sont toujours données ;
 * **N'accepter la clé que dans l'en-tête de requête** : recommandé, la clé n'est pas acceptée dans l'adresse ;
 * **Expiration** : jamais, ou dans 30, 90 ou 365 jours.
 

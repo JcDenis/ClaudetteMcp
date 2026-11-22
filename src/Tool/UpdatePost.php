@@ -26,6 +26,11 @@ class UpdatePost extends PostTool
         return 'Update a blog entry';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_POSTS;
+    }
+
     public function description(): string
     {
         return 'Update an existing entry of the blog. Only given arguments are changed. ' .

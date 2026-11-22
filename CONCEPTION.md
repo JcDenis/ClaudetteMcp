@@ -321,7 +321,32 @@ Règles :
 * Écartés : antispam (mots interdits = réglage du filtre pour tout le blog), simpleMenu et widgets (réglages du blog),
   pings, maintenance, importExport, Uninstaller, aboutConfig, userPref, themeEditor et les thèmes.
 
-Ensuite : choix des familles d'outils (billets, pages, médias, commentaires) à la création de la clé.
+Familles d'outils (après la 0.4, branche `tool-families`) : une clé peut être limitée à certaines familles,
+pour que l'assistant ne voie que ce dont il a besoin (moins d'outils à valider, moins de risques).
+
+| Famille | Outils |
+|---|---|
+| `base` (toujours donnée) | `get_blog` |
+| `posts` | billets et pages, `list_categories`, `list_tags`, et ce que les plugins y ajoutent (periodical, postExpired, eventHandler) |
+| `classification` | `create_category`, `update_category`, `rename_tag` : un appel touche beaucoup de billets ou des adresses |
+| `media` | médias |
+| `comments` | commentaires : le seul texte écrit par des visiteurs, d'où l'intérêt de pouvoir le couper |
+| `extras` | blogroll, et ce que les plugins ajoutent autour des billets (alias, liens courts, flux, cinecturlink2, enhancePostContent, PenseBete) |
+| `stats` | lecture : activité, notes, sondages, problèmes de contenu (Orphelins) |
+| `admin` | audit de compatibilité, outils de service (DotclearWatchServer, daRepo) |
+| `other` | outils sans famille ou de famille inconnue |
+
+Règles :
+
+* Familles par domaine plutôt que par plugin : `set_post_expiration` reste avec les billets, la liste ne grandit pas avec les plugins.
+* La liste est fixe dans ClaudetteMcp, un plugin choisit une famille existante, sous forme de chaîne
+  (pas les constantes de `McpTool`, absentes des versions plus anciennes de ClaudetteMcp).
+* Stockées dans `credential_data` de la clé (`families`), sans changer la table. Une clé sans familles (créée avant)
+  donne tous les outils. Une nouvelle clé a toutes les familles cochées par défaut ; ce qui est coché est enregistré tel quel.
+* `tools/list` ne donne que les outils des familles de la clé, `tools/call` refuse les autres. La lecture seule s'ajoute aux familles.
+* Pas encore de modification d'une clé existante : révoquer et en créer une autre.
+
+Ensuite : modifier les familles d'une clé existante. (billets, pages, médias, commentaires) à la création de la clé.
 
 ## Points à vérifier
 

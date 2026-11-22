@@ -84,7 +84,7 @@ class McpEndpoint extends ApiServerEndpoint
         $version = isset($_SERVER['HTTP_MCP_PROTOCOL_VERSION']) && is_string($_SERVER['HTTP_MCP_PROTOCOL_VERSION']) ? $_SERVER['HTTP_MCP_PROTOCOL_VERSION'] : '';
 
         $server = $this->key instanceof McpKey ?
-            new McpServer(new McpTools(), $this->key->readonly) :
+            new McpServer(new McpTools(), $this->key->readonly, $this->key) :
             new McpServer(null);
         $server->handle($this->api->getBody(), $version);
 

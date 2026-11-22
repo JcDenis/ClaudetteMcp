@@ -26,6 +26,11 @@ class ListCategories extends McpTool
         return 'List blog categories';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_POSTS;
+    }
+
     public function description(): string
     {
         return 'List categories of the blog as a flat tree: "level" gives the depth of a category, a sub-category follows its parent.';

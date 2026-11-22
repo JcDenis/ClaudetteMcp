@@ -26,6 +26,11 @@ class ListComments extends CommentTool
         return 'List blog comments';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_COMMENTS;
+    }
+
     public function description(): string
     {
         return 'List comments and trackbacks of the blog, most recent first, with their content in HTML. ' .

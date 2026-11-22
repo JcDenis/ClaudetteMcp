@@ -38,6 +38,11 @@ class GetCompatibilityAudit extends McpTool
         return 'Get the compatibility audit';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_ADMIN;
+    }
+
     public function description(): string
     {
         return 'Get the last compatibility audit of DotclearWatch: which installed plugins and themes (distributed ones excepted) ' .

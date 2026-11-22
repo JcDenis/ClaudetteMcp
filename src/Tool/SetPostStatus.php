@@ -29,6 +29,11 @@ class SetPostStatus extends PostTool
         return 'Publish or unpublish a blog entry';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_POSTS;
+    }
+
     public function description(): string
     {
         return 'Change the status of an entry of the blog. "published" makes the entry visible to everyone on the blog at once. ' .

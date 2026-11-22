@@ -26,6 +26,11 @@ class ListTags extends McpTool
         return 'List blog tags';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_POSTS;
+    }
+
     public function description(): string
     {
         return 'List tags used by entries of the blog, most used first, with the number of entries of each tag.';

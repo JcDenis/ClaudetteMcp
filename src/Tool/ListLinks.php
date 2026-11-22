@@ -23,6 +23,11 @@ class ListLinks extends BlogrollTool
         return 'List blogroll links';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_EXTRAS;
+    }
+
     public function description(): string
     {
         return 'List links and link categories of the blog blogroll, in display order. ' .

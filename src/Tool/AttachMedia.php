@@ -26,6 +26,11 @@ class AttachMedia extends MediaTool
         return 'Link a media to a blog entry';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_MEDIA;
+    }
+
     public function description(): string
     {
         return 'Link a file of the media library to an entry of the blog, without changing the content of the entry. ' .

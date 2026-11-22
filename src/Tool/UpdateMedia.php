@@ -32,6 +32,11 @@ class UpdateMedia extends MediaTool
         return 'Update a media';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_MEDIA;
+    }
+
     public function description(): string
     {
         return 'Update the title, alternate text, description or privacy of a file of the media library. ' .

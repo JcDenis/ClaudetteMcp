@@ -34,6 +34,11 @@ class RenameTag extends PostTool
         return 'Rename a blog tag';
     }
 
+    public function family(): string
+    {
+        return self::FAMILY_CLASSIFICATION;
+    }
+
     public function description(): string
     {
         return 'Rename a tag on all entries of the blog (' . implode(', ', $this->types()) . '). If the new tag already exists, both tags are merged. ' .

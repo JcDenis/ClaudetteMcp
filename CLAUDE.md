@@ -58,7 +58,8 @@ Required Dotclear and PHP versions: see `_define.php`.
 * `src/Tool/UpdatePost.php`: tool: update an entry.
 * `src/Tool/UploadMedia.php`: tool: upload a media.
 * Behaviors used: `ClaudetteMcpAddMediaLink`, `ClaudetteMcpAddPostType` (entries tools only see posts and pages,
-  a plugin adds its own entries type, after checking permissions itself).
+  a plugin adds its own entries type, after checking permissions itself), `ClaudetteMcpAddPostStatus` (entries tools
+  only know the core statuses, a plugin adds its own ones as name => status code).
 * Requires ApiServer (`requires` in `_define.php`).
 
 ## Pitfalls

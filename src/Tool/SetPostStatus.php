@@ -33,7 +33,7 @@ class SetPostStatus extends PostTool
     {
         return 'Change the status of an entry of the blog. "published" makes the entry visible to everyone on the blog at once. ' .
             '"scheduled" publishes it automatically at its date, which must be in the future (set it with update_post). ' .
-            '"unpublished" and "pending" hide it from the blog. ' .
+            '"unpublished" and "pending" hide it from the blog. Other statuses, if any, are added by plugins (ex: proofreading steps). ' .
             'Only do this when the user explicitly asks for it. No ping is sent.';
     }
 

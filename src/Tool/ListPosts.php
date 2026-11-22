@@ -38,7 +38,7 @@ class ListPosts extends PostTool
         return $this->typeProperties('Entries type, default: post.') + [
             'status' => [
                 'type'        => 'string',
-                'enum'        => ['published', 'unpublished', 'scheduled', 'pending', 'all'],
+                'enum'        => [...array_keys($this->statuses()), 'all'],
                 'description' => 'Entries status, default: published.',
             ],
             'category_id' => [

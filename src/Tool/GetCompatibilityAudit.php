@@ -42,13 +42,18 @@ class GetCompatibilityAudit extends McpTool
     {
         return 'Get the last compatibility audit of DotclearWatch: which installed plugins and themes (distributed ones excepted) ' .
             'will break ("alert") or use deprecated code ("notice") with the next Dotclear version, and if the PHP version is enough. ' .
-            'Without argument: a summary by module. With a module: its findings (file, line, symbol, replacement, note). ' .
+            'Without argument: a summary of modules with findings, and the number of modules without any. ' .
+            'With a module: its findings (file, line, symbol, replacement, note). ' .
             'The audit is only read: if it is missing or "outdated" is true, ask the user to run it from the DotclearWatch admin page.';
     }
 
     public function properties(): array
     {
         return [
+            'all' => [
+                'type'        => 'boolean',
+                'description' => 'True to list in the summary the modules without findings too.',
+            ],
             'module' => [
                 'type'        => 'string',
                 'description' => 'The module key from the summary, "plugin:<id>" or "theme:<id>", to get its findings.',
@@ -110,18 +115,30 @@ class GetCompatibilityAudit extends McpTool
             ]);
         }
 
+        $all     = $this->bool($args, 'all');
         $modules = [];
+        $ok      = 0;
         foreach ($result['results'] as $key => $item) {
-            $modules[] = $this->summary($key, $item);
+            $summary = $this->summary($key, $item);
+            if ($summary['level'] === 'ok') {
+                $ok++;
+                if (!$all) {
+                    continue;
+                }
+            }
+            $modules[] = $summary;
         }
 
-        return array_merge($data, ['modules' => $modules]);
+        return array_merge($data, [
+            'modules'    => $modules,
+            'modules_ok' => $ok,
+        ]);
     }
 
     /**
      * @param   array<mixed>    $item
      *
-     * @return  array<string, mixed>
+     * @return  array{key: string, name: string, version: string, enabled: bool, level: string, alerts: int, notices: int}
      */
     private function summary(string $key, array $item): array
     {

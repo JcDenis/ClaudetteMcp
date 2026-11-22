@@ -37,11 +37,17 @@ class McpTools
             new Tool\UpdatePost(),
             new Tool\SetPostStatus(),
             new Tool\CreateCategory(),
+            new Tool\UpdateCategory(),
             new Tool\UploadMedia(),
+            new Tool\UpdateMedia(),
             new Tool\AttachMedia(),
             new Tool\DetachMedia(),
             new Tool\ListComments(),
             new Tool\SetCommentStatus(),
+            new Tool\RenameTag(),
+            new Tool\ListLinks(),
+            new Tool\SetLink(),
+            new Tool\GetCompatibilityAudit(),
         ]);
 
         # --BEHAVIOR-- ClaudetteMcpAddTool -- ArrayObject

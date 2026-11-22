@@ -33,21 +33,28 @@ Required Dotclear and PHP versions: see `_define.php`.
 * `src/ThirdParty/FeaturedMedia.php`: the plugin featuredMedia (by Franck Paul) links one media to an entry.
 * `src/ThirdParty/ThirdParty.php`: tools only use Dotclear core and its distributed plugins.
 * `src/Tool/AttachMedia.php`: tool: link a media to an entry.
+* `src/Tool/BlogrollTool.php`: blogroll tools helper (plugin blogroll).
 * `src/Tool/CommentTool.php`: in frontend context Dotclear only gives published comments.
 * `src/Tool/CreateCategory.php`: tool: create a category.
 * `src/Tool/CreatePost.php`: tool: create an entry.
 * `src/Tool/DetachMedia.php`: tool: unlink a media from an entry.
 * `src/Tool/GetBlog.php`: tool: get blog information.
+* `src/Tool/GetCompatibilityAudit.php`: tool: read the compatibility audit of DotclearWatch (super admin).
 * `src/Tool/GetPost.php`: tool: get an entry.
 * `src/Tool/ListCategories.php`: tool: list categories.
 * `src/Tool/ListComments.php`: tool: list comments.
+* `src/Tool/ListLinks.php`: tool: list blogroll links.
 * `src/Tool/ListMedia.php`: tool: list media.
 * `src/Tool/ListPosts.php`: tool: list entries.
 * `src/Tool/ListTags.php`: tool: list tags.
 * `src/Tool/MediaTool.php`: media tools helper.
 * `src/Tool/PostTool.php`: entries tools helper.
+* `src/Tool/RenameTag.php`: tool: rename or merge a tag.
 * `src/Tool/SetCommentStatus.php`: tool: change the status of a comment.
+* `src/Tool/SetLink.php`: tool: add or update a blogroll link or category.
 * `src/Tool/SetPostStatus.php`: tool: change the status of an entry.
+* `src/Tool/UpdateCategory.php`: tool: update a category.
+* `src/Tool/UpdateMedia.php`: tool: update the properties of a media.
 * `src/Tool/UpdatePost.php`: tool: update an entry.
 * `src/Tool/UploadMedia.php`: tool: upload a media.
 * Behaviors used: `ClaudetteMcpAddMediaLink`, `ClaudetteMcpAddPostType` (entries tools only see posts and pages,
@@ -59,6 +66,8 @@ Required Dotclear and PHP versions: see `_define.php`.
 * A key never gives more than the Dotclear permissions of its user. Tools run in frontend context, where the core checks nothing: every tool checks permissions itself.
 * No tool deletes content, touches blog settings, users, plugins or keys. Keys are stored in the core table `credential` without changing its structure, one key per blog.
 * Its own tools only use the Dotclear core and its distributed plugins. The author's plugins carry their own tools; plugins of other authors who will not do it go in `src/ThirdParty/`, written with ClaudetteMcp behaviors only, without calling their classes.
+* Distributed plugins can be disabled or removed: a tool relying on one checks `App::plugins()->moduleExists()`
+  in `available()` before touching its classes. Test with the plugin enabled, disabled (`_disabled` file) and removed.
 * Each tool must be validated by the user when the connector is (re)connected: keep the number of tools small.
 * CI installs ApiServer from the author's repositories, then from franck-paul's.
 
